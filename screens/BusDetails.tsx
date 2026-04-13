@@ -120,6 +120,15 @@ const BusDetails = () => {
             <StopItem title="City Center" time="10 : 25 AM" />
           </View>
         </View>
+
+        {/* Book Ticket Button */}
+        <Pressable 
+          style={styles.bookTicketButton}
+          onPress={() => navigation.navigate("TicketBooking")}
+        >
+          <Text style={styles.bookTicketText}>Book Ticket</Text>
+        </Pressable>
+
       </ScrollView>
 
       <BottomNavigation />
@@ -396,6 +405,29 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: 10,
     color: Color.colorBlack,
+  },
+  bookTicketButton: {
+    width: "100%",
+    height: 64,
+    marginTop: 24,
+    borderWidth: 1.5,
+    borderColor: Color.colorBlack,
+    backgroundColor: "#2563EB",
+    borderRadius: Border.br_16,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bookTicketText: {
+    color: Color.colorWhite,
+    fontFamily: FontFamily.poppins,
+    fontWeight: "800",
+    fontSize: 24,
+    textAlign: "center",
   }
 });
 

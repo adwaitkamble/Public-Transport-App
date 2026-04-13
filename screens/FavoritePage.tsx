@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import BottomNavigation from "../components/BottomNavigation";
-import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
+import { MaterialCommunityIcons, FontAwesome, Feather } from "@expo/vector-icons";
 import {
   FontFamily,
   Color,
@@ -64,12 +64,8 @@ const FavoritePage = () => {
     <SafeAreaView style={styles.favoritePage} edges={["top", "left", "right"]}>
       <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16) }]}>
         <View style={styles.headerRow}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={styles.headerIcon}
-              contentFit="contain"
-              source={require("../assets/image-21.png")}
-            />
+          <Pressable onPress={() => navigation.navigate("Menu")}>
+            <Feather name="menu" size={32} color="black" />
           </Pressable>
           <Text style={styles.headerTitle}>Route Results</Text>
           <Pressable onPress={() => {}}>

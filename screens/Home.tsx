@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Pressable } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import {
   FontFamily,
   FontSize,
 } from "../GlobalStyles";
+import { getBuses } from "../services/api";
 
 const CSSSearchIcon = () => (
   <View style={styles.cssSearchContainer}>
@@ -21,9 +22,9 @@ const CSSSearchIcon = () => (
   </View>
 );
 
-const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta }: any) => {
+const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) => {
   return (
-    <Pressable style={styles.cardContainer}>
+    <Pressable style={styles.cardContainer} onPress={onPress}>
       <View style={styles.cardLeft}>
         <View style={styles.busBadge}>
           <Text style={styles.busBadgeText}>{busNumber}</Text>
@@ -34,13 +35,14 @@ const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta }: any) => {
           <View
             style={[
               styles.crowdBadge,
-              crowdLevel === "Medium" ? styles.crowdMedium : styles.crowdHigh,
+              crowdLevel === "Medium" ? styles.crowdMedium : 
+              crowdLevel === "Low" ? styles.crowdLow : styles.crowdHigh,
             ]}
           >
             <Text
               style={[
                 styles.crowdBadgeText,
-                crowdLevel === "High" && styles.crowdTextWhite,
+                (crowdLevel === "High" || crowdLevel === "Low") && styles.crowdTextWhite,
               ]}
             >
               {crowdLevel}
@@ -59,12 +61,32 @@ const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta }: any) => {
 const Home = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const [buses, setBuses] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchBuses = async () => {
+      try {
+        const data = await getBuses();
+        setBuses(data);
+      } catch (error) {
+        // Fallback to hardcoded data if API fails
+        setBuses([
+          { _id: "1", busNumber: "21A", routeName: "Station → City Center", crowdLevel: "Medium", eta: "5 min" },
+          { _id: "2", busNumber: "45B", routeName: "Suburb → Downtown", crowdLevel: "High", eta: "2 min" },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBuses();
+  }, []);
 
   return (
     <View style={styles.home}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
-        <Pressable onPress={() => { }}>
+        <Pressable onPress={() => navigation.navigate("Menu")}>
           <Image
             style={styles.headerIcon}
             contentFit="contain"
@@ -110,7 +132,7 @@ const Home = () => {
           </View>
           <View style={styles.actionItem}>
             <Text style={styles.actionTitle}>Daily Pass</Text>
-            <Pressable style={styles.actionBox} onPress={() => { }}>
+            <Pressable style={styles.actionBox} onPress={() => navigation.navigate("TicketBooking")}>
               <Image
                 style={styles.actionIcon}
                 source={require("../assets/image-11.png")}
@@ -123,18 +145,20 @@ const Home = () => {
         {/* Nearby Buses */}
         <Text style={[styles.sectionTitle, { marginTop: 4 }]}>Nearby Buses</Text>
         <View style={styles.busesContainer}>
-          <NearbyBusCard
-            busNumber="21A"
-            routeText="Station → City Center"
-            crowdLevel="Medium"
-            eta="5 min"
-          />
-          <NearbyBusCard
-            busNumber="21A"
-            routeText="Station → City Center"
-            crowdLevel="High"
-            eta="2 min"
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color={Color.colorRoyalblue} style={{ padding: 20 }} />
+          ) : (
+            buses.slice(0, 4).map((bus: any, index: number) => (
+              <NearbyBusCard
+                key={bus._id || index}
+                busNumber={bus.busNumber}
+                routeText={bus.routeName}
+                crowdLevel={bus.crowdLevel}
+                eta={bus.eta}
+                onPress={() => navigation.navigate("BusDetails", { busId: bus._id })}
+              />
+            ))
+          )}
         </View>
 
         {/* Live Map */}
@@ -340,6 +364,9 @@ const styles = StyleSheet.create({
   },
   crowdMedium: {
     backgroundColor: Color.colorGoldenrod,
+  },
+  crowdLow: {
+    backgroundColor: "#169e46",
   },
   crowdHigh: {
     backgroundColor: "#ef4242",
