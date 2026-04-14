@@ -22,6 +22,11 @@ app.use("/api/routes", routeRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
+// Root route for quick browser checks
+app.get("/", (req, res) => {
+  res.send("Smart Bus API is running. Use /api/health for status.");
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Smart Bus API is running" });
