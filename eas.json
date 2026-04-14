@@ -8,7 +8,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://your-backend-domain.com/api"
+        "EXPO_PUBLIC_API_URL": "https://public-transport-app-c7u6.onrender.com/api"
       }
     },
     "preview": {
@@ -17,13 +17,13 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://your-backend-domain.com/api"
+        "EXPO_PUBLIC_API_URL": "https://public-transport-app-c7u6.onrender.com/api"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://your-backend-domain.com/api"
+        "EXPO_PUBLIC_API_URL": "https://public-transport-app-c7u6.onrender.com/api"
       }
     }
   },

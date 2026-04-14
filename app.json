@@ -2,6 +2,7 @@
   "expo": {
     "name": "Smart Bus",
     "slug": "smart-bus",
+    "owner": "adwaitkamble007",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
