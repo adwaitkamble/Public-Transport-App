@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User");
 const auth = require("../middleware/auth");
 
@@ -92,6 +93,53 @@ router.put("/profile", auth, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/auth/google
+router.post("/google", async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    
+    // Verify the Google token cryptographically
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    // Extract user logic cleanly out of Google payload
+    const { sub: googleId, email, name, picture } = ticket.getPayload();
+
+    // Check if the user already exists matching Native Email OR GoogleId
+    let user = await User.findOne({ $or: [{ email }, { googleId }] });
+
+    if (!user) {
+      // First time user logging in with Google. Autocreate their account securely!
+      user = await User.create({
+        fullName: name,
+        email: email,
+        googleId: googleId,
+        // Optional parameters not provided by Google are safely omitted
+      });
+    } else if (!user.googleId) {
+      // If user exists natively under email but logging in with google, link their account!
+      user.googleId = googleId;
+      await user.save();
+    }
+
+    // Return the native app standard JWT
+    res.json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone || "",
+      token: generateToken(user._id),
+      isNewUser: !user.phone // Help the frontend determine if they should ask for phone number!
+    });
+  } catch (error) {
+    console.error("Google Auth Error:", error);
+    res.status(401).json({ message: "Invalid Google token" });
   }
 });
 

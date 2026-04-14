@@ -12,8 +12,12 @@ import {
   FontSize,
 } from "../GlobalStyles";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-import { registerUser, loginUser } from "../services/api";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { registerUser, loginUser, loginWithGoogle } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
   const navigation = useNavigation<any>();
@@ -26,12 +30,41 @@ const Login = () => {
   const [loading, setLoading] = React.useState(false);
   const [isLoginMode, setIsLoginMode] = React.useState(false);
 
-  // Form state
+  // --- Form state ---
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+
+  // --- Google OAuth Hook ---
+  // webClientId = Web OAuth Client ID, androidClientId = Android OAuth Client ID
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
+    androidClientId: "998727045283-lrue57b5edadk28q79mb3m67ub622joo.apps.googleusercontent.com",
+  });
+
+  React.useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.idToken) {
+        handleGoogleLoginComplete(authentication.idToken);
+      }
+    }
+  }, [response]);
+
+  const handleGoogleLoginComplete = async (idToken: string) => {
+    setLoading(true);
+    try {
+      const data = await loginWithGoogle(idToken);
+      setUser(data);
+      navigation.replace("Home");
+    } catch (error: any) {
+      Alert.alert("Google Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignUp = async () => {
     if (!fullName || !email || !phone || !password || !confirmPassword) {
@@ -77,21 +110,24 @@ const Login = () => {
     }
   };
 
+  const handleGooglePress = () => {
+    promptAsync();
+  };
+
   const handleSocialLogin = (provider: string) => () => {
-    // Simulated Social Login
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setUser({ id: "social_mock", fullName: `${provider} User`, email: `user@${provider.toLowerCase()}.com`, token: "mock_token" });
-      navigation.replace("Home");
-    }, 1000);
+    if (provider === "Google") {
+      handleGooglePress();
+      return;
+    }
+    // Simulated fallback for other platforms
+    Alert.alert("Coming Soon!", provider + " sign in is not supported yet.");
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => { }}>
           <Image
             style={styles.headerIcon}
             contentFit="contain"
@@ -99,7 +135,7 @@ const Login = () => {
           />
         </Pressable>
         <Text style={styles.headerTitle}>Smart Bus</Text>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => { }}>
           <Image
             style={styles.headerIcon}
             contentFit="contain"

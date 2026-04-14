@@ -17,13 +17,17 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
       trim: true,
+      default: "", // Google users won't default with a phone number
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: 6,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/missing googleId for standard email users
     },
   },
   { timestamps: true }
