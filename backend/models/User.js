@@ -20,6 +20,21 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "", // Google users won't default with a phone number
     },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other", "Prefer not to say"],
+    },
+    dob: {
+      type: Date,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    isProfileComplete: {
+      type: Boolean,
+      default: false,
+    },
     password: {
       type: String,
       minlength: 6,

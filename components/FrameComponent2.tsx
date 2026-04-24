@@ -12,12 +12,14 @@ import {
   Border,
   BoxShadow,
 } from "../GlobalStyles";
+import { useTheme } from "../context/ThemeContext";
 
 const FrameComponent2 = () => {
   const navigation = useNavigation<any>();
+  const { themeColors } = useTheme();
 
   return (
-    <View style={styles.navBar}>
+    <View style={[styles.navBar, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
       {/* Home */}
       <Pressable
         style={styles.navItem}
@@ -25,12 +27,12 @@ const FrameComponent2 = () => {
       >
         <View style={styles.iconWrap}>
           <Image
-            style={styles.navIcon}
+            style={[styles.navIcon, { tintColor: themeColors.icon }]}
             contentFit="cover"
             source={require("../assets/image-5.png")}
           />
         </View>
-        <Text style={styles.navLabel}>Home</Text>
+        <Text style={[styles.navLabel, { color: themeColors.subText }]}>Home</Text>
       </Pressable>
 
       {/* Route */}
@@ -40,12 +42,12 @@ const FrameComponent2 = () => {
       >
         <View style={styles.iconWrap}>
           <Image
-            style={styles.navIcon}
+            style={[styles.navIcon, { tintColor: themeColors.icon }]}
             contentFit="cover"
             source={require("../assets/image-6.png")}
           />
         </View>
-        <Text style={styles.navLabel}>Route</Text>
+        <Text style={[styles.navLabel, { color: themeColors.subText }]}>Route</Text>
       </Pressable>
 
       {/* Favorites */}
@@ -55,12 +57,12 @@ const FrameComponent2 = () => {
       >
         <View style={styles.iconWrap}>
           <Image
-            style={styles.navIcon}
+            style={[styles.navIcon, { tintColor: themeColors.icon }]}
             contentFit="cover"
             source={require("../assets/image-7.png")}
           />
         </View>
-        <Text style={styles.navLabel}>Favorites</Text>
+        <Text style={[styles.navLabel, { color: themeColors.subText }]}>Favorites</Text>
       </Pressable>
 
       {/* Profile */}
@@ -70,12 +72,12 @@ const FrameComponent2 = () => {
       >
         <View style={styles.iconWrap}>
           <Image
-            style={styles.navIcon}
+            style={[styles.navIcon, { tintColor: themeColors.icon }]}
             contentFit="cover"
             source={require("../assets/image-8.png")}
           />
         </View>
-        <Text style={styles.navLabel}>Profile</Text>
+        <Text style={[styles.navLabel, { color: themeColors.subText }]}>Profile</Text>
       </Pressable>
     </View>
   );

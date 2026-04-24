@@ -4,21 +4,23 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "../context/ThemeContext";
 
 const mockHistory = [
-  { id: '1', date: 'Oct 12, 2023', from: 'Mumbai', to: 'Pune', status: 'Completed', amount: '₹1500.00' },
-  { id: '2', date: 'Sep 28, 2023', from: 'Pune', to: 'Goa', status: 'Completed', amount: '₹4500.00' },
-  { id: '3', date: 'Aug 15, 2023', from: 'Mumbai', to: 'Nashik', status: 'Cancelled', amount: '₹1200.00' },
+  { id: '1', date: 'Oct 12, 2023', from: 'Swargate', to: 'Shivaji Nagar', status: 'Completed', amount: '₹15.00' },
+  { id: '2', date: 'Sep 28, 2023', from: 'Katraj', to: 'Hinjewadi Phase 1', status: 'Completed', amount: '₹40.00' },
+  { id: '3', date: 'Aug 15, 2023', from: 'Kothrud', to: 'Deccan Gymkhana', status: 'Cancelled', amount: '₹10.00' },
 ];
 
 const TravelHistoryScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const { themeColors } = useTheme();
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.historyCard}>
+    <View style={[styles.historyCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
       <View style={styles.cardHeader}>
-        <Text style={styles.dateText}>{item.date}</Text>
+        <Text style={[styles.dateText, { color: themeColors.subText }]}>{item.date}</Text>
         <Text style={[styles.statusText, { color: item.status === 'Completed' ? '#34c759' : '#ff3b30' }]}>
           {item.status}
         </Text>
@@ -27,18 +29,18 @@ const TravelHistoryScreen = () => {
       <View style={styles.routeContainer}>
         <View style={styles.routeRow}>
           <MaterialCommunityIcons name="circle-slice-8" size={16} color={Color.colorRoyalblue} />
-          <Text style={styles.cityText}>{item.from}</Text>
+          <Text style={[styles.cityText, { color: themeColors.text }]}>{item.from}</Text>
         </View>
-        <View style={styles.routeLine} />
+        <View style={[styles.routeLine, { backgroundColor: themeColors.divider }]} />
         <View style={styles.routeRow}>
           <MaterialCommunityIcons name="map-marker" size={16} color="#ef4242" />
-          <Text style={styles.cityText}>{item.to}</Text>
+          <Text style={[styles.cityText, { color: themeColors.text }]}>{item.to}</Text>
         </View>
       </View>
 
-      <View style={styles.cardFooter}>
-        <Text style={styles.amountText}>{item.amount}</Text>
-        <Pressable style={styles.viewTicketBtn}>
+      <View style={[styles.cardFooter, { borderTopColor: themeColors.divider }]}>
+        <Text style={[styles.amountText, { color: themeColors.text }]}>{item.amount}</Text>
+        <Pressable style={[styles.viewTicketBtn, { backgroundColor: themeColors.background }]}>
           <Text style={styles.viewTicketText}>View Details</Text>
         </Pressable>
       </View>
@@ -46,12 +48,12 @@ const TravelHistoryScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={Color.colorBlack} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Travel History</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Travel History</Text>
         <View style={styles.backBtn} />
       </View>
 

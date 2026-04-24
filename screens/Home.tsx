@@ -14,6 +14,7 @@ import {
   FontSize,
 } from "../GlobalStyles";
 import { getBuses } from "../services/api";
+import { useTheme } from "../context/ThemeContext";
 
 const CSSSearchIcon = () => (
   <View style={styles.cssSearchContainer}>
@@ -22,14 +23,14 @@ const CSSSearchIcon = () => (
   </View>
 );
 
-const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) => {
+const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress, themeColors }: any) => {
   return (
-    <Pressable style={styles.cardContainer} onPress={onPress}>
+    <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground }]} onPress={onPress}>
       <View style={styles.cardLeft}>
         <View style={styles.busBadge}>
           <Text style={styles.busBadgeText}>{busNumber}</Text>
         </View>
-        <Text style={styles.routeText}>{routeText}</Text>
+        <Text style={[styles.routeText, { color: themeColors.text }]}>{routeText}</Text>
         <View style={styles.crowdRow}>
           <Text style={styles.crowdLabel}>Crowd</Text>
           <View
@@ -51,8 +52,8 @@ const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) 
         </View>
       </View>
       <View style={styles.cardRight}>
-        <Text style={styles.etaLabel}>ETA</Text>
-        <Text style={styles.etaValue}>{eta}</Text>
+        <Text style={[styles.etaLabel, { color: themeColors.subText }]}>ETA</Text>
+        <Text style={[styles.etaValue, { color: themeColors.text }]}>{eta}</Text>
       </View>
     </Pressable>
   );
@@ -61,6 +62,7 @@ const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) 
 const Home = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const { themeColors } = useTheme();
   const [buses, setBuses] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -83,20 +85,20 @@ const Home = () => {
   }, []);
 
   return (
-    <View style={styles.home}>
+    <View style={[styles.home, { backgroundColor: themeColors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}>
         <Pressable onPress={() => navigation.navigate("Menu")}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-21.png")}
           />
         </Pressable>
-        <Text style={styles.headerTitle}>Smart Bus</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Smart Bus</Text>
         <Pressable onPress={() => { }}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-3.png")}
           />
@@ -109,20 +111,20 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Search Bar */}
-        <View style={styles.searchBoxContainer}>
+        <View style={[styles.searchBoxContainer, { backgroundColor: themeColors.cardBackground }]}>
           <CSSSearchIcon />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: themeColors.text }]}
             placeholder="Where do you want to go?"
-            placeholderTextColor="#888"
+            placeholderTextColor={themeColors.subText}
           />
         </View>
 
         {/* Action Buttons */}
         <View style={styles.actionRow}>
           <View style={styles.actionItem}>
-            <Text style={styles.actionTitle}>Bus Ticket</Text>
-            <Pressable style={styles.actionBox} onPress={() => navigation.navigate("Map")}>
+            <Text style={[styles.actionTitle, { color: themeColors.text }]}>Bus Ticket</Text>
+            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground }]} onPress={() => navigation.navigate("Map")}>
               <Image
                 style={styles.actionIcon}
                 source={require("../assets/image-10.png")}
@@ -131,8 +133,8 @@ const Home = () => {
             </Pressable>
           </View>
           <View style={styles.actionItem}>
-            <Text style={styles.actionTitle}>Daily Pass</Text>
-            <Pressable style={styles.actionBox} onPress={() => navigation.navigate("TicketBooking")}>
+            <Text style={[styles.actionTitle, { color: themeColors.text }]}>Daily Pass</Text>
+            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground }]} onPress={() => navigation.navigate("TicketBooking")}>
               <Image
                 style={styles.actionIcon}
                 source={require("../assets/image-11.png")}
@@ -143,7 +145,7 @@ const Home = () => {
         </View>
 
         {/* Nearby Buses */}
-        <Text style={[styles.sectionTitle, { marginTop: 4 }]}>Nearby Buses</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 4, color: themeColors.text }]}>Nearby Buses</Text>
         <View style={styles.busesContainer}>
           {loading ? (
             <ActivityIndicator size="large" color={Color.colorRoyalblue} style={{ padding: 20 }} />
@@ -156,14 +158,15 @@ const Home = () => {
                 crowdLevel={bus.crowdLevel}
                 eta={bus.eta}
                 onPress={() => navigation.navigate("BusDetails", { busId: bus._id })}
+                themeColors={themeColors}
               />
             ))
           )}
         </View>
 
         {/* Live Map */}
-        <Text style={[styles.sectionTitle, { marginTop: 4 }]}>Live Map</Text>
-        <View style={styles.mapContainer}>
+        <Text style={[styles.sectionTitle, { marginTop: 4, color: themeColors.text }]}>Live Map</Text>
+        <View style={[styles.mapContainer, { backgroundColor: themeColors.cardBackground }]}>
           <Image
             source={require("../assets/map-preview.png")}
             style={styles.mapImage}

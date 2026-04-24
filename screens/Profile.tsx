@@ -13,17 +13,18 @@ import {
 import { Feather, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getProfile } from "../services/api";
+import { useTheme } from "../context/ThemeContext";
 
-const ProfileMenuItem = ({ icon, title, subtitle, onPress }: any) => (
+const ProfileMenuItem = ({ icon, title, subtitle, onPress, themeColors }: any) => (
   <Pressable style={styles.menuItem} onPress={onPress}>
-    <View style={styles.menuIconBox}>
+    <View style={[styles.menuIconBox, { backgroundColor: themeColors.background }]}>
       {icon}
     </View>
     <View style={styles.menuTextArea}>
-      <Text style={styles.menuTitle}>{title}</Text>
-      {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
+      <Text style={[styles.menuTitle, { color: themeColors.text }]}>{title}</Text>
+      {subtitle && <Text style={[styles.menuSubtitle, { color: themeColors.subText }]}>{subtitle}</Text>}
     </View>
-    <MaterialIcons name="chevron-right" size={24} color="#888" />
+    <MaterialIcons name="chevron-right" size={24} color={themeColors.subText} />
   </Pressable>
 );
 
@@ -31,6 +32,7 @@ const Profile = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
+  const { themeColors } = useTheme();
   const [profileData, setProfileData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -64,20 +66,20 @@ const Profile = () => {
   const displayUser = profileData || user;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}>
         <Pressable onPress={() => {}}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-21.png")}
           />
         </Pressable>
-        <Text style={styles.headerTitle}>Smart Bus</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Smart Bus</Text>
         <Pressable onPress={() => {}}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-3.png")}
           />
@@ -89,84 +91,90 @@ const Profile = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.pageTitle}>Profile</Text>
+        <Text style={[styles.pageTitle, { color: themeColors.text }]}>Profile</Text>
 
         {/* Avatar & Info */}
         {loading ? (
-          <View style={[styles.profileCard, { justifyContent: "center" }]}>
+          <View style={[styles.profileCard, { justifyContent: "center", backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
             <ActivityIndicator size="large" color={Color.colorRoyalblue} />
           </View>
         ) : (
-          <View style={styles.profileCard}>
-            <View style={styles.avatarCircle}>
+          <View style={[styles.profileCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
+            <View style={[styles.avatarCircle, { backgroundColor: themeColors.background }]}>
               <Ionicons name="person" size={48} color={Color.colorRoyalblue} />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
+              <Text style={[styles.profileName, { color: themeColors.text }]}>
                 {displayUser?.fullName || "User"}
               </Text>
-              <Text style={styles.profileEmail}>
+              <Text style={[styles.profileEmail, { color: themeColors.subText }]}>
                 {displayUser?.email || "email@example.com"}
               </Text>
-              <Text style={styles.profilePhone}>
+              <Text style={[styles.profilePhone, { color: themeColors.subText }]}>
                 {displayUser?.phone || "+1 000-0000"}
               </Text>
             </View>
-            <Pressable style={styles.editProfileBtn} onPress={() => navigation.navigate("PersonalInfo")}>
+            <Pressable style={[styles.editProfileBtn, { backgroundColor: themeColors.background }]} onPress={() => navigation.navigate("PersonalInfo")}>
               <Feather name="edit-2" size={18} color={Color.colorRoyalblue} />
             </Pressable>
           </View>
         )}
 
         {/* Menu Items */}
-        <View style={styles.menuCard}>
+        <View style={[styles.menuCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <ProfileMenuItem
             icon={<Feather name="user" size={20} color={Color.colorRoyalblue} />}
             title="Personal Information"
             subtitle="Name, email, phone"
             onPress={() => navigation.navigate("PersonalInfo")}
+            themeColors={themeColors}
           />
-          <View style={styles.menuDivider} />
+          <View style={[styles.menuDivider, { backgroundColor: themeColors.divider }]} />
           <ProfileMenuItem
             icon={<Feather name="credit-card" size={20} color={Color.colorRoyalblue} />}
             title="Payment Methods"
             subtitle="UPI, cards, netbanking"
             onPress={() => navigation.navigate("TicketBooking")}
+            themeColors={themeColors}
           />
-          <View style={styles.menuDivider} />
+          <View style={[styles.menuDivider, { backgroundColor: themeColors.divider }]} />
           <ProfileMenuItem
             icon={<Feather name="clock" size={20} color={Color.colorRoyalblue} />}
             title="Travel History"
             subtitle="Past rides & tickets"
             onPress={() => navigation.navigate("TravelHistory")}
+            themeColors={themeColors}
           />
-          <View style={styles.menuDivider} />
+          <View style={[styles.menuDivider, { backgroundColor: themeColors.divider }]} />
           <ProfileMenuItem
             icon={<Ionicons name="notifications-outline" size={20} color={Color.colorRoyalblue} />}
             title="Notifications"
             subtitle="Alerts & updates"
             onPress={() => navigation.navigate("Notifications")}
+            themeColors={themeColors}
           />
         </View>
 
-        <View style={styles.menuCard}>
+        <View style={[styles.menuCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <ProfileMenuItem
             icon={<Feather name="settings" size={20} color={Color.colorRoyalblue} />}
             title="Settings"
             subtitle="Preferences, language"
             onPress={() => navigation.navigate("Settings")}
+            themeColors={themeColors}
           />
-          <View style={styles.menuDivider} />
+          <View style={[styles.menuDivider, { backgroundColor: themeColors.divider }]} />
           <ProfileMenuItem
             icon={<Feather name="help-circle" size={20} color={Color.colorRoyalblue} />}
             title="Help & Support"
             subtitle="FAQs, contact us"
             onPress={() => navigation.navigate("HelpSupport")}
+            themeColors={themeColors}
           />
         </View>
 
         {/* Logout Button */}
-        <Pressable style={styles.logoutButton} onPress={handleLogout}>
+        <Pressable style={[styles.logoutButton, { backgroundColor: themeColors.cardBackground }]} onPress={handleLogout}>
           <Feather name="log-out" size={20} color="#ef4242" />
           <Text style={styles.logoutText}>Log Out</Text>
         </Pressable>

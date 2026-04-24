@@ -112,6 +112,29 @@ export const loginWithGoogle = async (idToken: string) => {
   return data;
 };
 
+// ─── Phone OTP Auth ────────────────────────────────────
+
+export const sendPhoneOtp = async (phone: string) => {
+  const response = await fetch(`${getApiBaseUrl()}/auth/phone/send-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  });
+  return handleResponse(response);
+};
+
+export const verifyPhoneOtp = async (phone: string, otp: string) => {
+  const response = await fetch(`${getApiBaseUrl()}/auth/phone/verify-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, otp }),
+  });
+  const data = await handleResponse(response);
+  await AsyncStorage.setItem("token", data.token);
+  await AsyncStorage.setItem("user", JSON.stringify(data));
+  return data;
+};
+
 export const getProfile = async () => {
   const headers = await authHeaders();
   const response = await safeFetch(`${getApiBaseUrl()}/auth/profile`, { headers });

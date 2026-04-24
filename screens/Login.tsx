@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View, Text, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Text, TextInput, Pressable, Alert, ActivityIndicator, Modal, Platform } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,8 +13,10 @@ import {
 } from "../GlobalStyles";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
-import { registerUser, loginUser, loginWithGoogle } from "../services/api";
+import Constants from "expo-constants";
+import { registerUser, loginUser, loginWithGoogle, sendPhoneOtp, verifyPhoneOtp } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -37,11 +39,19 @@ const Login = () => {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
 
+  const isExpoGo =
+    Constants.appOwnership === "expo" ||
+    Constants.executionEnvironment === "storeClient";
+
   // --- Google OAuth Hook ---
-  // webClientId = Web OAuth Client ID, androidClientId = Android OAuth Client ID
+  // Google OAuth only works on web in Expo Go (SDK 54+).
+  // On mobile, the auth proxy was removed and Google rejects exp:// redirect URIs.
+  const isWeb = Platform.OS === 'web';
+
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
-    androidClientId: "998727045283-lrue57b5edadk28q79mb3m67ub622joo.apps.googleusercontent.com",
+    webClientId:
+      "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
+    ...(isWeb ? { redirectUri: "http://localhost:8082/" } : {}),
   });
 
   React.useEffect(() => {
@@ -49,6 +59,8 @@ const Login = () => {
       const { authentication } = response;
       if (authentication?.idToken) {
         handleGoogleLoginComplete(authentication.idToken);
+      } else if (authentication?.accessToken) {
+        handleGoogleLoginWithAccessToken(authentication.accessToken);
       }
     }
   }, [response]);
@@ -57,6 +69,23 @@ const Login = () => {
     setLoading(true);
     try {
       const data = await loginWithGoogle(idToken);
+      setUser(data);
+      navigation.replace("Home");
+    } catch (error: any) {
+      Alert.alert("Google Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLoginWithAccessToken = async (accessToken: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const userInfo = await res.json();
+      const data = await loginWithGoogle(accessToken, userInfo);
       setUser(data);
       navigation.replace("Home");
     } catch (error: any) {
@@ -111,7 +140,79 @@ const Login = () => {
   };
 
   const handleGooglePress = () => {
+    if (!isWeb) {
+      // Google Sign-In is not supported on mobile in Expo Go (SDK 54+)
+      Alert.alert(
+        "Use Phone Login",
+        "Google Sign-In is only available on the web version. Please use Phone OTP to sign in on mobile.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    if (!request) {
+      Alert.alert("Wait", "Google Auth is still loading...");
+      return;
+    }
+
     promptAsync();
+  };
+
+  // --- Phone OTP state ---
+  const [showPhoneModal, setShowPhoneModal] = React.useState(false);
+  const [phoneInput, setPhoneInput] = React.useState("");
+  const [otpInput, setOtpInput] = React.useState("");
+  const [otpSent, setOtpSent] = React.useState(false);
+  const [demoOtp, setDemoOtp] = React.useState("");
+  const [phoneLoading, setPhoneLoading] = React.useState(false);
+
+  const handleSendOtp = async () => {
+    if (!phoneInput || phoneInput.length < 10) {
+      Alert.alert("Error", "Please enter a valid phone number");
+      return;
+    }
+    setPhoneLoading(true);
+    try {
+      const result = await sendPhoneOtp(phoneInput);
+      setOtpSent(true);
+
+      if (result.sms_sent) {
+        // Real SMS was sent
+        setDemoOtp("");
+        Alert.alert("OTP Sent! ✅", "A 6-digit verification code has been sent to your phone via SMS.");
+      } else if (result.demo_otp) {
+        // Demo mode — show OTP in banner
+        setDemoOtp(result.demo_otp);
+        Alert.alert("OTP Sent (Demo)", "Demo OTP: " + result.demo_otp + "\n\nEnter this code below.");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setPhoneLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpInput || otpInput.length !== 6) {
+      Alert.alert("Error", "Please enter the 6-digit OTP");
+      return;
+    }
+    setPhoneLoading(true);
+    try {
+      const data = await verifyPhoneOtp(phoneInput, otpInput);
+      setUser(data);
+      setShowPhoneModal(false);
+      
+      if (!data.isProfileComplete) {
+        navigation.replace("CompleteProfile");
+      } else {
+        navigation.replace("Home");
+      }
+    } catch (error: any) {
+      Alert.alert("Verification Failed", error.message);
+    } finally {
+      setPhoneLoading(false);
+    }
   };
 
   const handleSocialLogin = (provider: string) => () => {
@@ -119,7 +220,15 @@ const Login = () => {
       handleGooglePress();
       return;
     }
-    // Simulated fallback for other platforms
+    if (provider === "Phone") {
+      // Reset phone modal state and open it
+      setPhoneInput("");
+      setOtpInput("");
+      setOtpSent(false);
+      setDemoOtp("");
+      setShowPhoneModal(true);
+      return;
+    }
     Alert.alert("Coming Soon!", provider + " sign in is not supported yet.");
   };
 
@@ -301,6 +410,96 @@ const Login = () => {
       </KeyboardAwareScrollView>
 
       <FrameComponent2 />
+
+      {/* Phone OTP Modal */}
+      <Modal
+        visible={showPhoneModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowPhoneModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {otpSent ? "Enter OTP" : "Phone Login"}
+              </Text>
+              <Pressable onPress={() => setShowPhoneModal(false)}>
+                <Feather name="x" size={26} color={Color.colorBlack} />
+              </Pressable>
+            </View>
+
+            {!otpSent ? (
+              <>
+                <Text style={styles.modalSubtitle}>
+                  Enter your phone number to receive a verification code
+                </Text>
+                <View style={styles.modalInputCard}>
+                  <Text style={styles.inputLabel}>Phone Number</Text>
+                  <TextInput
+                    style={styles.inputField}
+                    placeholder="e.g., 8793091663"
+                    placeholderTextColor="#999"
+                    keyboardType="phone-pad"
+                    value={phoneInput}
+                    onChangeText={setPhoneInput}
+                    maxLength={15}
+                  />
+                </View>
+                <Pressable
+                  style={[styles.signUpButton, phoneLoading && styles.buttonDisabled]}
+                  onPress={handleSendOtp}
+                  disabled={phoneLoading}
+                >
+                  {phoneLoading ? (
+                    <ActivityIndicator color="white" size="small" />
+                  ) : (
+                    <Text style={styles.signUpButtonText}>Send OTP</Text>
+                  )}
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalSubtitle}>
+                  We sent a 6-digit code to {phoneInput}
+                </Text>
+                {demoOtp ? (
+                  <View style={styles.demoOtpBanner}>
+                    <Feather name="info" size={16} color="#2563EB" />
+                    <Text style={styles.demoOtpText}>Demo OTP: {demoOtp}</Text>
+                  </View>
+                ) : null}
+                <View style={styles.modalInputCard}>
+                  <Text style={styles.inputLabel}>Verification Code</Text>
+                  <TextInput
+                    style={[styles.inputField, styles.otpField]}
+                    placeholder="000000"
+                    placeholderTextColor="#999"
+                    keyboardType="number-pad"
+                    value={otpInput}
+                    onChangeText={setOtpInput}
+                    maxLength={6}
+                  />
+                </View>
+                <Pressable
+                  style={[styles.signUpButton, phoneLoading && styles.buttonDisabled]}
+                  onPress={handleVerifyOtp}
+                  disabled={phoneLoading}
+                >
+                  {phoneLoading ? (
+                    <ActivityIndicator color="white" size="small" />
+                  ) : (
+                    <Text style={styles.signUpButtonText}>Verify & Login</Text>
+                  )}
+                </Pressable>
+                <Pressable onPress={() => { setOtpSent(false); setOtpInput(""); }} style={styles.resendRow}>
+                  <Text style={styles.resendText}>Didn't receive? <Text style={styles.resendLink}>Resend OTP</Text></Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -465,6 +664,85 @@ const styles = StyleSheet.create({
   loginLink: {
     fontSize: 14,
     fontFamily: FontFamily.inter,
+    fontWeight: "700",
+    color: Color.colorRoyalblue,
+    textDecorationLine: "underline",
+  },
+  // --- Phone OTP Modal Styles ---
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalCard: {
+    backgroundColor: Color.colorWhite,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "900",
+    fontFamily: FontFamily.poppins,
+    color: Color.colorBlack,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    fontFamily: FontFamily.inter,
+    color: "#666",
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  modalInputCard: {
+    backgroundColor: Color.colorGainsboro || "#F0F2F5",
+    borderRadius: Border.br_16,
+    borderWidth: 1.5,
+    borderColor: Color.colorBlack,
+    paddingHorizontal: 18,
+    paddingTop: 12,
+    paddingBottom: 14,
+    marginBottom: 20,
+  },
+  otpField: {
+    fontSize: 28,
+    letterSpacing: 12,
+    textAlign: "center",
+    fontWeight: "700",
+  },
+  demoOtpBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EBF5FF",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginBottom: 16,
+    gap: 8,
+  },
+  demoOtpText: {
+    fontSize: 14,
+    fontFamily: FontFamily.inter,
+    fontWeight: "700",
+    color: "#2563EB",
+  },
+  resendRow: {
+    alignItems: "center",
+    marginTop: 16,
+  },
+  resendText: {
+    fontSize: 14,
+    fontFamily: FontFamily.inter,
+    color: "#666",
+  },
+  resendLink: {
     fontWeight: "700",
     color: Color.colorRoyalblue,
     textDecorationLine: "underline",

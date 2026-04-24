@@ -76,12 +76,22 @@ router.get("/profile", auth, async (req, res) => {
 // PUT /api/auth/profile (protected)
 router.put("/profile", auth, async (req, res) => {
   try {
-    const { fullName, email, phone } = req.body;
+    const { fullName, email, phone, gender, dob, location, isProfileComplete } = req.body;
     const user = await User.findById(req.user._id);
 
     if (fullName) user.fullName = fullName;
     if (email) user.email = email;
     if (phone) user.phone = phone;
+    if (gender) user.gender = gender;
+    if (dob) user.dob = dob;
+    if (location) user.location = location;
+    
+    // Automatically set isProfileComplete to true if required fields are provided
+    if (isProfileComplete !== undefined) {
+        user.isProfileComplete = isProfileComplete;
+    } else if (user.fullName !== "Phone User" && user.email && user.gender && user.location) {
+        user.isProfileComplete = true;
+    }
 
     await user.save();
 
@@ -90,6 +100,10 @@ router.put("/profile", auth, async (req, res) => {
       fullName: user.fullName,
       email: user.email,
       phone: user.phone,
+      gender: user.gender,
+      dob: user.dob,
+      location: user.location,
+      isProfileComplete: user.isProfileComplete,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -143,4 +157,107 @@ router.post("/google", async (req, res) => {
   }
 });
 
+// ─── Phone OTP Authentication via Twilio Verify ──────────────────────────
+const twilio = require("twilio");
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+const VERIFY_SID = process.env.TWILIO_VERIFY_SID;
+
+// POST /api/auth/phone/send-otp
+router.post("/phone/send-otp", async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone || phone.length < 10) {
+      return res.status(400).json({ message: "Please enter a valid phone number" });
+    }
+
+    // Clean phone number and add India country code
+    const cleanPhone = phone.replace(/[\s\-\+]/g, "").replace(/^91/, "");
+    const fullPhone = `+91${cleanPhone}`;
+
+    console.log(`\n📱 Sending OTP to ${fullPhone}...`);
+
+    // Use Twilio Verify to send OTP
+    const verification = await twilioClient.verify.v2
+      .services(VERIFY_SID)
+      .verifications.create({
+        to: fullPhone,
+        channel: "sms",
+      });
+
+    console.log(`✅ Twilio status: ${verification.status}\n`);
+
+    res.json({
+      message: "OTP sent to your phone!",
+      sms_sent: true,
+    });
+  } catch (error) {
+    console.error("❌ Twilio send error:", error.message);
+    res.status(500).json({ message: "Failed to send OTP: " + error.message });
+  }
+});
+
+// POST /api/auth/phone/verify-otp
+router.post("/phone/verify-otp", async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+
+    if (!phone || !otp) {
+      return res.status(400).json({ message: "Phone number and OTP are required" });
+    }
+
+    const cleanPhone = phone.replace(/[\s\-\+]/g, "").replace(/^91/, "");
+    const fullPhone = `+91${cleanPhone}`;
+
+    console.log(`🔍 Verifying OTP for ${fullPhone}...`);
+
+    // Use Twilio Verify to check OTP
+    const verificationCheck = await twilioClient.verify.v2
+      .services(VERIFY_SID)
+      .verificationChecks.create({
+        to: fullPhone,
+        code: otp,
+      });
+
+    if (verificationCheck.status !== "approved") {
+      return res.status(400).json({ message: "Invalid OTP. Please try again." });
+    }
+
+    console.log(`✅ OTP verified for ${fullPhone}\n`);
+
+    // Find or create user by phone number
+    let user = await User.findOne({ phone: cleanPhone });
+
+    if (!user) {
+      user = await User.create({
+        fullName: "Phone User",
+        email: `${cleanPhone}@phone.smartbus.app`,
+        phone: cleanPhone,
+      });
+    }
+
+    res.json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      gender: user.gender,
+      dob: user.dob,
+      location: user.location,
+      isProfileComplete: !!user.isProfileComplete,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    console.error("❌ Twilio verify error:", error.message);
+    if (error.code === 20404) {
+      return res.status(400).json({ message: "OTP expired. Please request a new one." });
+    }
+    res.status(500).json({ message: "Verification failed: " + error.message });
+  }
+});
+
 module.exports = router;
+

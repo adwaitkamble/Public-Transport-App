@@ -5,14 +5,15 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 import { Color, FontFamily, Border } from "../GlobalStyles";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
-const MenuItem = ({ icon, label, onPress }: any) => (
+const MenuItem = ({ icon, label, onPress, themeColors }: any) => (
   <Pressable style={styles.menuItem} onPress={onPress}>
     <View style={styles.menuIconWrapper}>
-      <MaterialCommunityIcons name={icon} size={28} color={Color.colorBlack} />
+      <MaterialCommunityIcons name={icon} size={28} color={themeColors.text} />
     </View>
-    <Text style={styles.menuLabel}>{label}</Text>
-    <Feather name="chevron-right" size={24} color={Color.colorDimgray} />
+    <Text style={[styles.menuLabel, { color: themeColors.text }]}>{label}</Text>
+    <Feather name="chevron-right" size={24} color={themeColors.subText} />
   </Pressable>
 );
 
@@ -20,6 +21,7 @@ const MenuScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const { user, logout } = useAuth();
+  const { themeColors } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -35,68 +37,74 @@ const MenuScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: Math.max(insets.top, 16) }]}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.background }]}>
       
       {/* Header with Close Button */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
-          <Feather name="x" size={32} color={Color.colorBlack} />
+          <Feather name="x" size={32} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Menu</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Menu</Text>
         <View style={{ width: 32 }} />
       </View>
 
       <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
         
         {/* Profile Card Section */}
-        <Pressable style={styles.profileSection} onPress={() => navigation.navigate('PersonalInfo')}>
+        <Pressable style={[styles.profileSection, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => navigation.navigate('PersonalInfo')}>
           <View style={styles.avatarContainer}>
             <MaterialCommunityIcons name="account" size={48} color={Color.colorWhite} />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{user?.fullName || "Adwait Kamble"}</Text>
-            <Text style={styles.profilePhone}>{user?.phone || "+91 98765 43210"}</Text>
+            <Text style={[styles.profileName, { color: themeColors.text }]}>{user?.fullName || "Adwait Kamble"}</Text>
+            <Text style={[styles.profilePhone, { color: themeColors.subText }]}>{user?.phone || "+91 98765 43210"}</Text>
           </View>
         </Pressable>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: themeColors.divider }]} />
 
         {/* Menu Items */}
-        <View style={styles.menuList}>
+        <View style={[styles.menuList, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <MenuItem 
             icon="ticket-percent-outline" 
             label="My Tickets" 
             onPress={() => navigation.navigate("TravelHistory")} 
+            themeColors={themeColors}
           />
           <MenuItem 
             icon="card-account-details-outline" 
             label="Active Passes" 
             onPress={() => alert("You currently have no active passes.")} 
+            themeColors={themeColors}
           />
           <MenuItem 
             icon="wallet-outline" 
             label="Payment Methods" 
             onPress={() => navigation.navigate("TicketBooking")} 
+            themeColors={themeColors}
           />
           <MenuItem 
             icon="history" 
             label="Ride History" 
             onPress={() => navigation.navigate("TravelHistory")} 
+            themeColors={themeColors}
           />
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: themeColors.divider }]} />
 
-        <View style={styles.menuList}>
+        <View style={[styles.menuList, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <MenuItem 
             icon="cog-outline" 
             label="Settings" 
             onPress={() => navigation.navigate("Settings")} 
+            themeColors={themeColors}
           />
           <MenuItem 
             icon="help-circle-outline" 
             label="Help & Support" 
             onPress={() => navigation.navigate("HelpSupport")} 
+            themeColors={themeColors}
           />
         </View>
 
@@ -104,7 +112,7 @@ const MenuScreen = () => {
 
       {/* Logout Button */}
       <Pressable 
-        style={[styles.logoutButton, { marginBottom: Math.max(insets.bottom, 24) }]} 
+        style={[styles.logoutButton, { marginBottom: Math.max(insets.bottom, 24), backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} 
         onPress={handleLogout}
       >
         <MaterialCommunityIcons name="logout" size={24} color="#DC2626" />
