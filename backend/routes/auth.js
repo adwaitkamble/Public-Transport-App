@@ -113,17 +113,38 @@ router.put("/profile", auth, async (req, res) => {
 // POST /api/auth/google
 router.post("/google", async (req, res) => {
   try {
-    const { idToken } = req.body;
+    const { idToken, accessToken } = req.body;
     
-    // Verify the Google token cryptographically
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    
-    // Extract user logic cleanly out of Google payload
-    const { sub: googleId, email, name, picture } = ticket.getPayload();
+    let googleId, email, name, picture;
+
+    if (idToken) {
+      // Verify the Google token cryptographically
+      const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else if (accessToken) {
+      // Fetch user info from Google using the access token
+      const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (!response.ok) {
+        throw new Error("Invalid access token");
+      }
+      const payload = await response.json();
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else {
+      return res.status(400).json({ message: "No token provided" });
+    }
 
     // Check if the user already exists matching Native Email OR GoogleId
     let user = await User.findOne({ $or: [{ email }, { googleId }] });

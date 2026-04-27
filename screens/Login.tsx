@@ -51,7 +51,9 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId:
       "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
-    ...(isWeb ? { redirectUri: "http://localhost:8082/" } : {}),
+    androidClientId:
+      "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
+    ...(isWeb ? { redirectUri: makeRedirectUri({ scheme: 'smart-bus' }) } : {}),
   });
 
   React.useEffect(() => {
@@ -85,7 +87,7 @@ const Login = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const userInfo = await res.json();
-      const data = await loginWithGoogle(accessToken, userInfo);
+      const data = await loginWithGoogle(accessToken, true);
       setUser(data);
       navigation.replace("Home");
     } catch (error: any) {

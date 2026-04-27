@@ -100,11 +100,11 @@ export const loginUser = async (email: string, password: string) => {
   return data;
 };
 
-export const loginWithGoogle = async (idToken: string) => {
+export const loginWithGoogle = async (token: string, isAccessToken: boolean = false) => {
   const response = await fetch(`${BASE_URL}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify(isAccessToken ? { accessToken: token } : { idToken: token }),
   });
   const data = await handleResponse(response);
   await AsyncStorage.setItem("token", data.token);
