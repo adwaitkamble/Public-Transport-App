@@ -1,6 +1,7 @@
 import * as React from "react";
-import { StyleSheet, View, Text, ScrollView, useWindowDimensions, Pressable } from "react-native";
+import { StyleSheet, View, Text, ScrollView, useWindowDimensions, Pressable, Platform } from "react-native";
 import { Image } from "expo-image";
+import { WebView } from "react-native-webview";
 import BottomNavigation from "../components/BottomNavigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -27,6 +28,58 @@ const Map1 = ({ embedded = false }: Map1Props) => {
     ? 230
     : Math.max(210, Math.min(280, Math.round(height * 0.38)));
 
+  const mapHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <style>
+          body { padding: 0; margin: 0; background-color: #f0f0f0; }
+          #map { height: 100vh; width: 100vw; }
+          .bus-marker {
+            background-color: #4285F4;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+          }
+          .stop-marker {
+            background-color: #EA4335;
+            border: 2px solid white;
+            border-radius: 50%;
+          }
+      </style>
+  </head>
+  <body>
+      <div id="map"></div>
+      <script>
+          var map = L.map('map', { attributionControl: false }).setView([18.5204, 73.8567], 13);
+          
+          // Modern minimal map tiles
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+              maxZoom: 20
+          }).addTo(map);
+
+          var busIcon = L.divIcon({ className: 'bus-marker', iconSize: [22, 22] });
+          var stopIcon = L.divIcon({ className: 'stop-marker', iconSize: [14, 14] });
+
+          // Mock Bus Stops
+          L.marker([18.5204, 73.8567], {icon: stopIcon}).addTo(map).bindPopup('Station');
+          L.marker([18.5254, 73.8600], {icon: stopIcon}).addTo(map).bindPopup('MG Road');
+          L.marker([18.5300, 73.8650], {icon: stopIcon}).addTo(map).bindPopup('City Center');
+
+          // Live Bus Location
+          L.marker([18.5230, 73.8580], {icon: busIcon}).addTo(map).bindPopup('<b>Bus 21 A</b><br>Arriving in 3 min').openPopup();
+
+          var route = [[18.5204, 73.8567], [18.5230, 73.8580], [18.5254, 73.8600], [18.5300, 73.8650]];
+          var polyline = L.polyline(route, {color: '#4285F4', weight: 4}).addTo(map);
+          map.fitBounds(polyline.getBounds(), { padding: [20, 20] });
+      </script>
+  </body>
+  </html>
+  `;
+
   const content = (
     <View style={styles.content}>
       <View style={styles.topSection}>
@@ -44,11 +97,21 @@ const Map1 = ({ embedded = false }: Map1Props) => {
         <Text style={styles.subtitle}>Station → City Center</Text>
 
         <View style={styles.cardContainer}>
-          <Image
-            style={[styles.mapImage, { height: mapHeight }]}
-            contentFit="cover"
-            source={require("../assets/map-route.png")}
-          />
+          {Platform.OS === 'web' ? (
+            <iframe
+              srcDoc={mapHtml}
+              style={{ width: "100%", height: mapHeight, border: 0, borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+            />
+          ) : (
+            <View style={{ height: mapHeight, width: "100%", overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
+              <WebView
+                originWhitelist={['*']}
+                source={{ html: mapHtml }}
+                style={{ flex: 1 }}
+                nestedScrollEnabled={true}
+              />
+            </View>
+          )}
 
           <View style={styles.etaCard}>
             <View style={styles.etaColumn}>

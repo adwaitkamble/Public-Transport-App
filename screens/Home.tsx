@@ -1,6 +1,7 @@
 import * as React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Pressable, ActivityIndicator, Platform } from "react-native";
 import { Image } from "expo-image";
+import { WebView } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -65,6 +66,43 @@ const Home = () => {
   const { themeColors } = useTheme();
   const [buses, setBuses] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+
+  const mapHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <style>
+          body { padding: 0; margin: 0; background-color: #f0f0f0; }
+          #map { height: 100vh; width: 100vw; }
+          .bus-marker {
+            background-color: #4285F4;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+          }
+      </style>
+  </head>
+  <body>
+      <div id="map"></div>
+      <script>
+          var map = L.map('map', { attributionControl: false }).setView([18.5204, 73.8567], 13);
+          
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+              maxZoom: 20
+          }).addTo(map);
+
+          var busIcon = L.divIcon({ className: 'bus-marker', iconSize: [22, 22] });
+
+          L.marker([18.5230, 73.8580], {icon: busIcon}).addTo(map).bindPopup('<b>Bus 21 A</b><br>Station -> City Center');
+          L.marker([18.5100, 73.8500], {icon: busIcon}).addTo(map).bindPopup('<b>Bus 45 B</b><br>Suburb -> Downtown');
+          L.marker([18.5300, 73.8700], {icon: busIcon}).addTo(map).bindPopup('<b>Bus 12 C</b><br>IT Park -> Station');
+      </script>
+  </body>
+  </html>
+  `;
 
   React.useEffect(() => {
     const fetchBuses = async () => {
@@ -167,11 +205,19 @@ const Home = () => {
         {/* Live Map */}
         <Text style={[styles.sectionTitle, { marginTop: 4, color: themeColors.text }]}>Live Map</Text>
         <View style={[styles.mapContainer, { backgroundColor: themeColors.cardBackground }]}>
-          <Image
-            source={require("../assets/map-preview.png")}
-            style={styles.mapImage}
-            contentFit="cover"
-          />
+          {Platform.OS === 'web' ? (
+            <iframe
+              srcDoc={mapHtml}
+              style={{ width: "100%", height: "100%", border: 0 }}
+            />
+          ) : (
+            <WebView
+              originWhitelist={['*']}
+              source={{ html: mapHtml }}
+              style={{ flex: 1 }}
+              nestedScrollEnabled={true}
+            />
+          )}
         </View>
       </KeyboardAwareScrollView>
 
