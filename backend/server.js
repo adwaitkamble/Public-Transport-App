@@ -8,6 +8,7 @@ const busRoutes = require("./routes/buses");
 const routeRoutes = require("./routes/routes");
 const ticketRoutes = require("./routes/tickets");
 const favoriteRoutes = require("./routes/favorites");
+const paymentRoutes = require("./routes/payment");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/buses", busRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // Root route for quick browser checks
 app.get("/", (req, res) => {

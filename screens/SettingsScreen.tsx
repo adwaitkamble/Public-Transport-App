@@ -4,12 +4,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const SettingsScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { isDarkMode, toggleDarkMode, themeColors } = useTheme();
+  const { isDarkMode, toggleDarkMode, themeColors } = useAppTheme();
   const [locationServices, setLocationServices] = React.useState(true);
 
   return (

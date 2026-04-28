@@ -15,7 +15,7 @@ import {
   BoxShadow,
   Width,
 } from "../GlobalStyles";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 type Map1Props = {
   embedded?: boolean;
@@ -25,7 +25,7 @@ const Map1 = ({ embedded = false }: Map1Props) => {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   const mapHeight = embedded
     ? 230
     : height * 0.60; // 60% of the screen height

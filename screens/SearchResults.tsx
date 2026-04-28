@@ -12,11 +12,11 @@ import {
   FontFamily,
   FontSize,
 } from "../GlobalStyles";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const RouteCard = ({ bus1, bus2, time, transfers, crowdLevel, eta }: any) => {
   const navigation = useNavigation<any>();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   return (
     <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => navigation.navigate("Map")}>
       <View style={styles.cardLeft}>
@@ -81,7 +81,7 @@ type SearchResultsProps = {
 
 const SearchResults = ({ embedded = false }: SearchResultsProps) => {
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   return (
     <View style={[styles.searchResults, { backgroundColor: themeColors.background }, embedded && styles.searchResultsEmbedded]}>
       {/* Header */}

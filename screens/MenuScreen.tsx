@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 import { Color, FontFamily, Border } from "../GlobalStyles";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const MenuItem = ({ icon, label, onPress, themeColors }: any) => (
   <Pressable style={styles.menuItem} onPress={onPress}>
@@ -21,7 +21,7 @@ const MenuScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const { user, logout } = useAuth();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const handleLogout = async () => {
     try {

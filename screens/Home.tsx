@@ -15,7 +15,7 @@ import {
   FontSize,
 } from "../GlobalStyles";
 import { getBuses } from "../services/api";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const CSSSearchIcon = () => (
   <View style={styles.cssSearchContainer}>
@@ -63,7 +63,7 @@ const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress, themeCo
 const Home = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   const [buses, setBuses] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
 

@@ -18,7 +18,7 @@ import * as Google from "expo-auth-session/providers/google";
 import Constants from "expo-constants";
 import { registerUser, loginUser, loginWithGoogle, sendPhoneOtp, verifyPhoneOtp } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme as useAppTheme } from "../context/ThemeContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -26,7 +26,7 @@ const Login = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { setUser } = useAuth();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const [agreed, setAgreed] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);

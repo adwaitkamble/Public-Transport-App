@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const PersonalInfoScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const [name, setName] = React.useState(user?.fullName || "Adwait Kamble");
   const [email, setEmail] = React.useState(user?.email || "adwait@example.com");

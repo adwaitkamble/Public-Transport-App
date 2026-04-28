@@ -10,7 +10,7 @@ import {
   Color,
   Border,
 } from "../GlobalStyles";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const RouteCard = ({
   iconType,
@@ -60,7 +60,7 @@ const RouteCard = ({
 const FavoritePage = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   return (
     <SafeAreaView style={[styles.favoritePage, { backgroundColor: themeColors.background }]} edges={["top", "left", "right"]}>

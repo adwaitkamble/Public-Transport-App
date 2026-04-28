@@ -5,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 import Route from "./screens/Route";
 import Home from "./screens/Home";
@@ -23,13 +24,13 @@ import TravelHistoryScreen from "./screens/TravelHistoryScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import HelpSupportScreen from "./screens/HelpSupportScreen";
-import { useTheme } from "./context/ThemeContext";
+import { useAppTheme } from "./context/ThemeContext";
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
 const RootApp = () => {
-  const { isDarkMode, themeColors } = useTheme();
+  const { isDarkMode, themeColors } = useAppTheme();
 
   const MyTheme = {
     ...isDarkMode ? DarkTheme : DefaultTheme,
@@ -72,7 +73,9 @@ const App = () => {
     <ThemeProvider>
       <AuthProvider>
         <SafeAreaProvider>
-          <RootApp />
+          <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""}>
+            <RootApp />
+          </StripeProvider>
         </SafeAreaProvider>
       </AuthProvider>
     </ThemeProvider>

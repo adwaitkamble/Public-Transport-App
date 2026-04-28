@@ -247,3 +247,15 @@ export const removeFavorite = async (id: string) => {
   });
   return handleResponse(response);
 };
+
+// ─── Payment ───────────────────────────────────────────
+
+export const createPaymentIntent = async (amount: number, ticketType: string) => {
+  const headers = await authHeaders();
+  const response = await safeFetch(`${getApiBaseUrl()}/payment/create-payment-intent`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ amount, ticketType }),
+  });
+  return handleResponse(response);
+};

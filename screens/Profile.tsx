@@ -13,7 +13,7 @@ import {
 import { Feather, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getProfile } from "../services/api";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const ProfileMenuItem = ({ icon, title, subtitle, onPress, themeColors }: any) => (
   <Pressable style={styles.menuItem} onPress={onPress}>
@@ -32,7 +32,7 @@ const Profile = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   const [profileData, setProfileData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 

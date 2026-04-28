@@ -11,12 +11,12 @@ import {
   BoxShadow,
   Padding,
 } from "../GlobalStyles";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const Route = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   // Interactive State
   const [fromLocation, setFromLocation] = React.useState("");

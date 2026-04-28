@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const faqs = [
   { id: 1, question: "How do I cancel my ticket?", answer: "You can cancel your ticket by navigating to the Travel History section, selecting your active ticket, and pressing the 'Cancel' button at the bottom." },
@@ -15,7 +15,7 @@ const faqs = [
 const HelpSupportScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   const [message, setMessage] = React.useState("");
   const [expandedFaq, setExpandedFaq] = React.useState<number | null>(null);
   const [isSending, setIsSending] = React.useState(false);

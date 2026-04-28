@@ -11,8 +11,9 @@ import {
   FontFamily,
 } from "../GlobalStyles";
 import { Feather, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import { bookTicket } from '../services/api';
-import { useTheme } from "../context/ThemeContext";
+import { bookTicket, createPaymentIntent } from '../services/api';
+import { useAppTheme } from "../context/ThemeContext";
+import { useStripe } from '@stripe/stripe-react-native';
 
 const UpiAppIcon = ({ title, badgeText, color, icon, customSize }: any) => (
   <View style={styles.upiAppBox}>
@@ -51,13 +52,42 @@ const BankRow = ({ name, iconColor, letter, isSquare, isSlanted, isCircle }: any
 const TicketBooking = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
   const [paymentMethod, setPaymentMethod] = React.useState('upi');
   const [loading, setLoading] = React.useState(false);
+
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const handlePay = async () => {
     setLoading(true);
     try {
+      // 1. Fetch Payment Intent Client Secret from backend
+      const intentResponse = await createPaymentIntent(50, 'daily_pass');
+      if (!intentResponse.clientSecret) {
+        throw new Error('Failed to initialize payment');
+      }
+
+      // 2. Initialize Payment Sheet
+      const { error: initError } = await initPaymentSheet({
+        merchantDisplayName: 'Smart Bus',
+        paymentIntentClientSecret: intentResponse.clientSecret,
+      });
+
+      if (initError) {
+        throw new Error(initError.message);
+      }
+
+      // 3. Present Payment Sheet
+      const { error: presentError } = await presentPaymentSheet();
+
+      if (presentError) {
+        if (presentError.code === 'Canceled') {
+          return;
+        }
+        throw new Error(presentError.message);
+      }
+
+      // 4. Payment successful, book ticket
       const result = await bookTicket('daily_pass', 50, paymentMethod);
       Alert.alert('Success', result.message || 'Ticket booked successfully!', [
         { text: 'OK', onPress: () => navigation.navigate('Home') },
@@ -70,9 +100,9 @@ const TicketBooking = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}> 
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}>
         <Pressable onPress={() => navigation.canGoBack() ? navigation.goBack() : {}}>
           <Image
             style={[styles.headerIcon, { tintColor: themeColors.icon }]}
@@ -98,7 +128,7 @@ const TicketBooking = () => {
         <Text style={[styles.pageTitle, { color: themeColors.text }]}>Payment Methods</Text>
 
         {/* DAILY PASS */}
-        <View style={[styles.card, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+        <View style={[styles.card, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <View style={styles.rowBetweenBase}>
             <View style={styles.gap4}>
               <Text style={[styles.cardTitle, { color: themeColors.text }]}>DAILY PASS</Text>
@@ -123,7 +153,7 @@ const TicketBooking = () => {
           </View>
         </View>
 
-        <View style={[styles.card, styles.upiCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+        <View style={[styles.card, styles.upiCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <View style={styles.upiInputArea}>
             <Text style={[styles.upiInputLabel, { color: themeColors.text }]}>Enter UPI ID</Text>
             <TextInput
@@ -156,7 +186,7 @@ const TicketBooking = () => {
 
         {/* NETBANKING SECTION */}
         <Text style={[styles.sectionTitle, styles.netbankingTitle, { color: themeColors.text }]}>NETBANKING</Text>
-        <View style={[styles.card, styles.paddedCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+        <View style={[styles.card, styles.paddedCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           <BankRow name="HDFC Bank" iconColor="#ed1b24" isSquare={true} />
           <BankRow name="ICICI Bank" iconColor="#f26522" letter="i" isSlanted={true} />
           <BankRow name="State Bank of India" iconColor="#005b9f" isCircle={true} />
@@ -173,7 +203,7 @@ const TicketBooking = () => {
       </KeyboardAwareScrollView>
 
       {/* Floating Checkout Bar */}
-      <View style={[styles.checkoutBar, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+      <View style={[styles.checkoutBar, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
         <View style={styles.checkoutHeader}>
           <Text style={[styles.totalText, { color: themeColors.text }]}>Total to Pay: ₹50.00</Text>
           <View style={styles.secureBadge}>

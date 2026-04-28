@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const mockHistory = [
   { id: '1', date: 'Oct 12, 2023', from: 'Swargate', to: 'Shivaji Nagar', status: 'Completed', amount: '₹15.00' },
@@ -15,7 +15,7 @@ const mockHistory = [
 const TravelHistoryScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const renderItem = ({ item }: any) => (
     <View style={[styles.historyCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>

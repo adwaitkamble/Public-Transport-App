@@ -12,11 +12,11 @@ import {
   Border,
   BoxShadow,
 } from "../GlobalStyles";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const FrameComponent2 = () => {
   const navigation = useNavigation<any>();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   return (
     <View style={[styles.navBar, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>

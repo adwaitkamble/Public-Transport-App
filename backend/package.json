@@ -17,6 +17,7 @@
     "google-auth-library": "^10.6.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0",
+    "stripe": "^22.1.0",
     "twilio": "^6.0.0"
   },
   "devDependencies": {

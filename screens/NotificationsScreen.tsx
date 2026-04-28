@@ -4,12 +4,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 
 const NotificationsScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const [pushNotifs, setPushNotifs] = React.useState(true);
   const [emailNotifs, setEmailNotifs] = React.useState(false);

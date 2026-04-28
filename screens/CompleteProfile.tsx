@@ -7,14 +7,14 @@ import { Feather } from "@expo/vector-icons";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { updateProfile } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAppTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CompleteProfile = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { user, setUser } = useAuth();
-  const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   const [loading, setLoading] = React.useState(false);
   
