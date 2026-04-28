@@ -6,8 +6,9 @@ import { useNavigation } from "@react-navigation/native";
 import BottomNavigation from "../components/BottomNavigation";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { Color, FontFamily, Border, BoxShadow } from "../GlobalStyles";
+import { useAppTheme } from "../context/ThemeContext";
 
-const StopItem = ({ title, time, isActive }: any) => {
+const StopItem = ({ title, time, isActive, themeColors }: any) => {
   return (
     <View style={[styles.stopRow, isActive && styles.activeStopRow]}>
       {/* Node */}
@@ -25,14 +26,14 @@ const StopItem = ({ title, time, isActive }: any) => {
             <Text style={[styles.stopPillTitle, { color: "white", flex: 1 }]}>{title}</Text>
           </View>
           <View style={styles.nextStopBadge}>
-            <Text style={styles.nextTimeText}>{time}</Text>
-            <Text style={styles.nextStopText}>Next Stop</Text>
+            <Text style={[styles.nextTimeText, { color: themeColors.text }]}>{time}</Text>
+            <Text style={[styles.nextStopText, { color: themeColors.text }]}>Next Stop</Text>
           </View>
         </View>
       ) : (
         <View style={styles.stopPill}>
-          <Text style={styles.stopPillTitle}>{title}</Text>
-          <Text style={styles.stopPillTime}>{time}</Text>
+          <Text style={[styles.stopPillTitle, { color: themeColors.text }]}>{title}</Text>
+          <Text style={[styles.stopPillTime, { color: themeColors.subText }]}>{time}</Text>
         </View>
       )}
     </View>
@@ -42,7 +43,7 @@ const StopItem = ({ title, time, isActive }: any) => {
 const BusDetails = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-   const { themeColors } = useTheme();
+  const { themeColors } = useAppTheme();
 
   return (
      <View style={[styles.container, { backgroundColor: themeColors.background }]}> 
@@ -114,11 +115,11 @@ const BusDetails = () => {
           <View style={styles.stopsContainer}>
             <View style={styles.verticalLineLine} />
 
-            <StopItem title="Station" time="10 : 00 AM" />
-            <StopItem title="Park Street" time="10 : 07 AM" />
-            <StopItem title="MG Road" time="10 : 12 AM" isActive={true} />
-            <StopItem title="City Hospital" time="10 : 18 AM" />
-            <StopItem title="City Center" time="10 : 25 AM" />
+            <StopItem title="Station" time="10 : 00 AM" themeColors={themeColors} />
+            <StopItem title="Park Street" time="10 : 07 AM" themeColors={themeColors} />
+            <StopItem title="MG Road" time="10 : 12 AM" isActive={true} themeColors={themeColors} />
+            <StopItem title="City Hospital" time="10 : 18 AM" themeColors={themeColors} />
+            <StopItem title="City Center" time="10 : 25 AM" themeColors={themeColors} />
           </View>
         </View>
 

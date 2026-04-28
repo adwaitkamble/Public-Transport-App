@@ -1,5 +1,6 @@
 import "react-native-gesture-handler";
 import * as React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -29,13 +30,50 @@ import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
+// Instrument AsyncStorage to detect any setItem calls with undefined values
+try {
+  const _as: any = AsyncStorage as any;
+  const _origSet = _as.setItem?.bind(AsyncStorage);
+  if (_origSet) {
+    _as.setItem = async (key: string, value: any) => {
+      if (typeof value === "undefined") {
+        console.warn("AsyncStorage.setItem called with undefined for key:", key);
+      }
+      return _origSet(key, value);
+    };
+  }
+} catch (e) {
+  // ignore instrumentation failures
+}
+
 const RootApp = () => {
-  const { isDarkMode, themeColors } = useAppTheme();
+  let isDarkMode = false;
+  let themeColors: any = {
+    background: "#ffffff",
+    cardBackground: "#ffffff",
+    elevatedBackground: "#f7f9fc",
+    text: "#000000",
+    subText: "#5f6368",
+    divider: "#d8dee8",
+    headerBg: "#ffffff",
+    icon: "#000000",
+    border: "#1f2937",
+    primary: "#2563EB",
+  };
+  try {
+    const ctx = useAppTheme();
+    if (ctx && ctx.themeColors) {
+      isDarkMode = !!ctx.isDarkMode;
+      themeColors = ctx.themeColors;
+    }
+  } catch (e: any) {
+    // console.warn("useAppTheme:", e);
+  }
 
   const MyTheme = {
-    ...isDarkMode ? DarkTheme : DefaultTheme,
+    ...(isDarkMode ? DarkTheme : DefaultTheme),
     colors: {
-      ...(isDarkMode ? DarkTheme.colors : DefaultTheme.colors),
+      ...((isDarkMode ? DarkTheme.colors : DefaultTheme.colors) as any),
       background: themeColors.background,
     },
   };

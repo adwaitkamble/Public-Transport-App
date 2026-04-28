@@ -47,6 +47,10 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    if (!user.password) {
+      return res.status(400).json({ message: "This account was created using Google Sign-In. Please sign in with Google." });
+    }
+
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });

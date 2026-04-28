@@ -5,10 +5,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import { Feather } from "@expo/vector-icons";
 import { Color, Border, FontFamily } from "../GlobalStyles";
-import { updateProfile } from "../services/api";
+import { updateProfile, safeSetItem } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useAppTheme } from "../context/ThemeContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// AsyncStorage calls guarded via safeSetItem imported from services/api
 
 const CompleteProfile = () => {
   const navigation = useNavigation<any>();
@@ -41,7 +41,7 @@ const CompleteProfile = () => {
       
       // Update local state and storage
       setUser(updatedUser);
-      await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
+      await safeSetItem("user", updatedUser);
       
       Alert.alert("Success", "Profile completed successfully!");
       navigation.replace("Home");

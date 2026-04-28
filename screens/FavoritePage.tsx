@@ -19,6 +19,7 @@ const RouteCard = ({
   subtitle,
   time,
   isFilledStar,
+  themeColors,
 }: any) => {
   return (
     <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>

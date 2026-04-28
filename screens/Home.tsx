@@ -24,7 +24,8 @@ const CSSSearchIcon = () => (
   </View>
 );
 
-const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress, themeColors }: any) => {
+const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) => {
+  const { themeColors } = useAppTheme();
   return (
     <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground }]} onPress={onPress}>
       <View style={styles.cardLeft}>

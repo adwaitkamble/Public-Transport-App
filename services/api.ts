@@ -53,6 +53,20 @@ const getToken = async () => {
   return await AsyncStorage.getItem("token");
 };
 
+// Safely set AsyncStorage items: skip if value is undefined and coerce to string
+export const safeSetItem = async (key: string, value: any) => {
+  if (typeof value === "undefined") return;
+  let out = value;
+  if (typeof value !== "string") {
+    try {
+      out = JSON.stringify(value);
+    } catch (e) {
+      out = String(value);
+    }
+  }
+  await AsyncStorage.setItem(key, out);
+};
+
 const authHeaders = async () => {
   const token = await getToken();
   return {
@@ -83,8 +97,8 @@ export const registerUser = async (
     body: JSON.stringify({ fullName, email, phone, password }),
   });
   const data = await handleResponse(response);
-  await AsyncStorage.setItem("token", data.token);
-  await AsyncStorage.setItem("user", JSON.stringify(data));
+  await safeSetItem("token", data.token);
+  await safeSetItem("user", data);
   return data;
 };
 
@@ -98,8 +112,8 @@ export const loginUser = async (email: string, password: string) => {
   if (!data?.token) {
     throw new Error("Login succeeded but the server did not return an auth token.");
   }
-  await AsyncStorage.setItem("token", data.token);
-  await AsyncStorage.setItem("user", JSON.stringify(data));
+  await safeSetItem("token", data.token);
+  await safeSetItem("user", data);
   return data;
 };
 
@@ -110,8 +124,8 @@ export const loginWithGoogle = async (token: string, isAccessToken: boolean = fa
     body: JSON.stringify(isAccessToken ? { accessToken: token } : { idToken: token }),
   });
   const data = await handleResponse(response);
-  await AsyncStorage.setItem("token", data.token);
-  await AsyncStorage.setItem("user", JSON.stringify(data));
+  await safeSetItem("token", data.token);
+  await safeSetItem("user", data);
   return data;
 };
 
@@ -133,8 +147,8 @@ export const verifyPhoneOtp = async (phone: string, otp: string) => {
     body: JSON.stringify({ phone, otp }),
   });
   const data = await handleResponse(response);
-  await AsyncStorage.setItem("token", data.token);
-  await AsyncStorage.setItem("user", JSON.stringify(data));
+  await safeSetItem("token", data.token);
+  await safeSetItem("user", data);
   return data;
 };
 
