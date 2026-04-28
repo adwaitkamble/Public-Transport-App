@@ -19,6 +19,7 @@ router.post("/create-payment-intent", async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInSmallestUnit,
       currency: currency,
+      description: `Smart Bus Ticket - ${ticketType}`,
       // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
       automatic_payment_methods: {
         enabled: true,

@@ -13,6 +13,7 @@ import {
 import { Feather, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { bookTicket, createPaymentIntent } from '../services/api';
 import { useAppTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { useStripe } from '@stripe/stripe-react-native';
 
 const UpiAppIcon = ({ title, badgeText, color, icon, customSize }: any) => (
@@ -53,6 +54,7 @@ const TicketBooking = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { themeColors } = useAppTheme();
+  const { user } = useAuth();
   const [paymentMethod, setPaymentMethod] = React.useState('upi');
   const [loading, setLoading] = React.useState(false);
 
@@ -71,6 +73,13 @@ const TicketBooking = () => {
       const { error: initError } = await initPaymentSheet({
         merchantDisplayName: 'Smart Bus',
         paymentIntentClientSecret: intentResponse.clientSecret,
+        returnURL: 'smart-bus://stripe-redirect',
+        allowsDelayedPaymentMethods: true,
+        defaultBillingDetails: {
+          name: user?.fullName || 'Smart Bus User',
+          email: user?.email || 'user@smartbus.com',
+          phone: user?.phone || '',
+        },
       });
 
       if (initError) {

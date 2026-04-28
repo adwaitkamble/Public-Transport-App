@@ -1,51 +1,74 @@
 import * as React from "react";
-import { StyleSheet, View, Text, Pressable, ScrollView, FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, View, Text, Pressable, FlatList, ActivityIndicator } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
-import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAppTheme } from "../context/ThemeContext";
-
-const mockHistory = [
-  { id: '1', date: 'Oct 12, 2023', from: 'Swargate', to: 'Shivaji Nagar', status: 'Completed', amount: '₹15.00' },
-  { id: '2', date: 'Sep 28, 2023', from: 'Katraj', to: 'Hinjewadi Phase 1', status: 'Completed', amount: '₹40.00' },
-  { id: '3', date: 'Aug 15, 2023', from: 'Kothrud', to: 'Deccan Gymkhana', status: 'Cancelled', amount: '₹10.00' },
-];
+import { getMyTickets } from "../services/api";
 
 const TravelHistoryScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { themeColors } = useAppTheme();
+  const [tickets, setTickets] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const renderItem = ({ item }: any) => (
+  React.useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const fetchHistory = async () => {
+    setLoading(true);
+    try {
+      const data = await getMyTickets();
+      setTickets(data);
+    } catch (error) {
+      console.log("Failed to fetch tickets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderItem = ({ item }: any) => {
+    const isDailyPass = item.ticketType === 'daily_pass';
+    const dateStr = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    // Determine status color
+    let statusColor = '#34c759'; // active/completed
+    if (item.status === 'expired') statusColor = themeColors.subText;
+    if (item.status === 'cancelled') statusColor = '#ff3b30';
+
+    return (
     <View style={[styles.historyCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
       <View style={styles.cardHeader}>
-        <Text style={[styles.dateText, { color: themeColors.subText }]}>{item.date}</Text>
-        <Text style={[styles.statusText, { color: item.status === 'Completed' ? '#34c759' : '#ff3b30' }]}>
+        <Text style={[styles.dateText, { color: themeColors.subText }]}>{dateStr}</Text>
+        <Text style={[styles.statusText, { color: statusColor, textTransform: 'capitalize' }]}>
           {item.status}
         </Text>
       </View>
 
       <View style={styles.routeContainer}>
         <View style={styles.routeRow}>
-          <MaterialCommunityIcons name="circle-slice-8" size={16} color={Color.colorRoyalblue} />
-          <Text style={[styles.cityText, { color: themeColors.text }]}>{item.from}</Text>
+          <MaterialCommunityIcons name={isDailyPass ? "ticket-percent" : "circle-slice-8"} size={16} color={Color.colorRoyalblue} />
+          <Text style={[styles.cityText, { color: themeColors.text }]}>{isDailyPass ? "Daily Pass" : "Single Ticket"}</Text>
         </View>
         <View style={[styles.routeLine, { backgroundColor: themeColors.divider }]} />
         <View style={styles.routeRow}>
-          <MaterialCommunityIcons name="map-marker" size={16} color="#ef4242" />
-          <Text style={[styles.cityText, { color: themeColors.text }]}>{item.to}</Text>
+          <MaterialCommunityIcons name={isDailyPass ? "infinity" : "map-marker"} size={16} color="#ef4242" />
+          <Text style={[styles.cityText, { color: themeColors.text }]}>{isDailyPass ? "Valid Everywhere (24 Hrs)" : "Valid for 2 Hours"}</Text>
         </View>
       </View>
 
       <View style={[styles.cardFooter, { borderTopColor: themeColors.divider }]}>
-        <Text style={[styles.amountText, { color: themeColors.text }]}>{item.amount}</Text>
+        <Text style={[styles.amountText, { color: themeColors.text }]}>₹{item.price.toFixed(2)}</Text>
         <Pressable style={[styles.viewTicketBtn, { backgroundColor: themeColors.elevatedBackground }]}> 
           <Text style={[styles.viewTicketText, { color: themeColors.primary }]}>View Details</Text>
         </Pressable>
       </View>
     </View>
   );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
@@ -57,13 +80,23 @@ const TravelHistoryScreen = () => {
         <View style={styles.backBtn} />
       </View>
 
-      <FlatList
-        data={mockHistory}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color={Color.colorRoyalblue} style={{ marginTop: 40 }} />
+      ) : tickets.length === 0 ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: themeColors.subText, fontSize: 16 }}>No tickets found</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={tickets}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          refreshing={loading}
+          onRefresh={fetchHistory}
+        />
+      )}
     </View>
   );
 };
