@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
 
 // POST /api/payment/create-payment-intent
 router.post("/create-payment-intent", async (req, res) => {
