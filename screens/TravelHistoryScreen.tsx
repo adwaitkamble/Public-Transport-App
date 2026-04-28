@@ -40,8 +40,8 @@ const TravelHistoryScreen = () => {
 
       <View style={[styles.cardFooter, { borderTopColor: themeColors.divider }]}>
         <Text style={[styles.amountText, { color: themeColors.text }]}>{item.amount}</Text>
-        <Pressable style={[styles.viewTicketBtn, { backgroundColor: themeColors.background }]}>
-          <Text style={styles.viewTicketText}>View Details</Text>
+        <Pressable style={[styles.viewTicketBtn, { backgroundColor: themeColors.elevatedBackground }]}> 
+          <Text style={[styles.viewTicketText, { color: themeColors.primary }]}>View Details</Text>
         </Pressable>
       </View>
     </View>
@@ -69,22 +69,22 @@ const TravelHistoryScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Color.colorGainsboro },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingBottom: 16, backgroundColor: Color.colorGainsboro },
+  container: { flex: 1 },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingBottom: 16 },
   backBtn: { width: 40, height: 40, justifyContent: "center" },
-  headerTitle: { fontSize: 20, fontWeight: "800", color: Color.colorBlack, fontFamily: FontFamily.poppins },
+  headerTitle: { fontSize: 20, fontWeight: "800", fontFamily: FontFamily.poppins },
   content: { padding: 20 },
-  historyCard: { backgroundColor: Color.colorWhite, borderRadius: Border.br_16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: "#e0e0e0" },
+  historyCard: { borderRadius: Border.br_16, padding: 16, marginBottom: 16, borderWidth: 1 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  dateText: { fontSize: 14, fontFamily: FontFamily.inter, color: "#666" },
+  dateText: { fontSize: 14, fontFamily: FontFamily.inter },
   statusText: { fontSize: 14, fontWeight: "700", fontFamily: FontFamily.poppins },
   routeContainer: { marginLeft: 5, paddingVertical: 5 },
   routeRow: { flexDirection: "row", alignItems: "center" },
-  cityText: { fontSize: 16, fontWeight: "600", fontFamily: FontFamily.poppins, color: Color.colorBlack, marginLeft: 10 },
-  routeLine: { width: 2, height: 20, backgroundColor: "#ccc", marginLeft: 7, marginVertical: 4 },
-  cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 20, paddingTop: 15, borderTopWidth: 1, borderTopColor: "#f0f0f0" },
-  amountText: { fontSize: 18, fontWeight: "800", fontFamily: FontFamily.poppins, color: Color.colorBlack },
-  viewTicketBtn: { backgroundColor: "#ebf1fb", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
+  cityText: { fontSize: 16, fontWeight: "600", fontFamily: FontFamily.poppins, marginLeft: 10 },
+  routeLine: { width: 2, height: 20, marginLeft: 7, marginVertical: 4 },
+  cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 20, paddingTop: 15, borderTopWidth: 1 },
+  amountText: { fontSize: 18, fontWeight: "800", fontFamily: FontFamily.poppins },
+  viewTicketBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
   viewTicketText: { color: Color.colorRoyalblue, fontSize: 13, fontWeight: "700", fontFamily: FontFamily.poppins },
 });
 

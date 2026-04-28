@@ -42,11 +42,12 @@ const StopItem = ({ title, time, isActive }: any) => {
 const BusDetails = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+   const { themeColors } = useTheme();
 
   return (
-    <View style={styles.container}>
+     <View style={[styles.container, { backgroundColor: themeColors.background }]}> 
       {/* Header */}
-      <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
         <View style={styles.headerRow}>
           <Pressable onPress={() => navigation.goBack()}>
             <Image
@@ -55,11 +56,11 @@ const BusDetails = () => {
               source={require("../assets/image-21.png")}
             />
           </Pressable>
-          <Text style={styles.headerTitle}>Bus 21 A</Text>
+          <Text style={[styles.headerTitle, { color: themeColors.text }]}>Bus 21 A</Text>
           <View style={styles.headerStarWrapper}>
-            <FontAwesome name="star" size={28} color="#FFC107" />
+              <FontAwesome name="star" size={28} color="#FFC107" />
             <View style={styles.starOutline}>
-              <FontAwesome name="star-o" size={28} color="black" />
+              <FontAwesome name="star-o" size={28} color={themeColors.text} />
             </View>
           </View>
         </View>
@@ -72,41 +73,41 @@ const BusDetails = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Status Pill */}
-        <View style={styles.statusBox}>
+          <View style={[styles.statusBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
           <View style={styles.statusGreenBox}>
             <Text style={styles.statusGreenText}>On Time</Text>
           </View>
           <View style={styles.statusRightBox}>
-            <Text style={styles.statusText}>
+            <Text style={[styles.statusText, { color: themeColors.text }]}>
               Next arrival in <Text style={styles.statusGreenAlt}>3 min</Text>
             </Text>
           </View>
         </View>
 
         {/* Route Pill */}
-        <View style={styles.routeBox}>
-          <MaterialCommunityIcons name="bus-stop" size={28} color="black" />
-          <Text style={styles.routeText}>Station → City Center</Text>
+          <View style={[styles.routeBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+          <MaterialCommunityIcons name="bus-stop" size={28} color={themeColors.text} />
+          <Text style={[styles.routeText, { color: themeColors.text }]}>Station → City Center</Text>
         </View>
 
         {/* Stats Row */}
         <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Distance</Text>
-            <Text style={styles.statValue}>7.2 KM</Text>
+          <View style={[styles.statBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.statLabel, { color: themeColors.subText }]}>Distance</Text>
+            <Text style={[styles.statValue, { color: themeColors.text }]}>7.2 KM</Text>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Stops</Text>
-            <Text style={styles.statValue}>8</Text>
+          <View style={[styles.statBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.statLabel, { color: themeColors.subText }]}>Stops</Text>
+            <Text style={[styles.statValue, { color: themeColors.text }]}>8</Text>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Duration</Text>
-            <Text style={styles.statValue}>25 min</Text>
+          <View style={[styles.statBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.statLabel, { color: themeColors.subText }]}>Duration</Text>
+            <Text style={[styles.statValue, { color: themeColors.text }]}>25 min</Text>
           </View>
         </View>
 
         {/* Stops Title */}
-        <Text style={styles.sectionTitle}>Stops</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Stops</Text>
 
         {/* Stops Container */}
         <View style={styles.stopsContainerWrapper}>
@@ -123,7 +124,7 @@ const BusDetails = () => {
 
         {/* Book Ticket Button */}
         <Pressable 
-          style={styles.bookTicketButton}
+          style={[styles.bookTicketButton, { borderColor: themeColors.divider }]}
           onPress={() => navigation.navigate("TicketBooking")}
         >
           <Text style={styles.bookTicketText}>Book Ticket</Text>

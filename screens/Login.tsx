@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View, Text, TextInput, Pressable, Alert, ActivityIndicator, Modal, Platform } from "react-native";
+import { StyleSheet, View, Text, TextInput, Pressable, Alert, ActivityIndicator, Modal, Platform, KeyboardAvoidingView } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,6 +18,7 @@ import * as Google from "expo-auth-session/providers/google";
 import Constants from "expo-constants";
 import { registerUser, loginUser, loginWithGoogle, sendPhoneOtp, verifyPhoneOtp } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,6 +26,7 @@ const Login = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { setUser } = useAuth();
+  const { themeColors } = useTheme();
 
   const [agreed, setAgreed] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
@@ -52,8 +54,8 @@ const Login = () => {
     webClientId:
       "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
     androidClientId:
-      "998727045283-sa05gb0ml7jk0urbr6hdmckbhel6e34h.apps.googleusercontent.com",
-    ...(isWeb ? { redirectUri: makeRedirectUri({ scheme: 'smart-bus' }) } : {}),
+      "998727045283-lrue57b5edadk28q79mb3m67ub622joo.apps.googleusercontent.com",
+    redirectUri: makeRedirectUri({ scheme: 'smart-bus' }),
   });
 
   React.useEffect(() => {
@@ -142,16 +144,7 @@ const Login = () => {
   };
 
   const handleGooglePress = () => {
-    if (!isWeb) {
-      // Google Sign-In is not supported on mobile in Expo Go (SDK 54+)
-      Alert.alert(
-        "Use Phone Login",
-        "Google Sign-In is only available on the web version. Please use Phone OTP to sign in on mobile.",
-        [{ text: "OK" }]
-      );
-      return;
-    }
-
+    // We can now allow Google Sign in on Mobile because we are building a standalone APK
     if (!request) {
       Alert.alert("Wait", "Google Auth is still loading...");
       return;
@@ -235,20 +228,20 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}> 
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
         <Pressable onPress={() => { }}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-21.png")}
           />
         </Pressable>
-        <Text style={styles.headerTitle}>Smart Bus</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Smart Bus</Text>
         <Pressable onPress={() => { }}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-3.png")}
           />
@@ -256,7 +249,7 @@ const Login = () => {
       </View>
 
       {/* Divider */}
-      <View style={styles.headerDivider} />
+      <View style={[styles.headerDivider, { backgroundColor: themeColors.divider }]} />
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
@@ -264,18 +257,18 @@ const Login = () => {
         showsVerticalScrollIndicator={false}
         enableOnAndroid={true}
       >
-        <Text style={styles.pageTitle}>
+        <Text style={[styles.pageTitle, { color: themeColors.text }]}> 
           {isLoginMode ? "Welcome Back" : "Create Your Account"}
         </Text>
 
         {/* Full Name (sign up only) */}
         {!isLoginMode && (
-          <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>Full Name</Text>
+          <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.inputLabel, { color: themeColors.text }]}>Full Name</Text>
             <TextInput
-              style={styles.inputField}
+              style={[styles.inputField, { color: themeColors.text }]}
               placeholder="e.g., John Doe"
-              placeholderTextColor="#999"
+              placeholderTextColor={themeColors.subText}
               value={fullName}
               onChangeText={setFullName}
             />
@@ -283,12 +276,12 @@ const Login = () => {
         )}
 
         {/* Email Address */}
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Email Address</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Email Address</Text>
           <TextInput
-            style={styles.inputField}
+            style={[styles.inputField, { color: themeColors.text }]}
             placeholder="e.g., john.doe@email.com"
-            placeholderTextColor="#999"
+            placeholderTextColor={themeColors.subText}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -298,12 +291,12 @@ const Login = () => {
 
         {/* Phone Number (sign up only) */}
         {!isLoginMode && (
-          <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>Phone Number</Text>
+          <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.inputLabel, { color: themeColors.text }]}>Phone Number</Text>
             <TextInput
-              style={styles.inputField}
+              style={[styles.inputField, { color: themeColors.text }]}
               placeholder="e.g., +1 555-0199"
-              placeholderTextColor="#999"
+              placeholderTextColor={themeColors.subText}
               keyboardType="phone-pad"
               value={phone}
               onChangeText={setPhone}
@@ -312,13 +305,13 @@ const Login = () => {
         )}
 
         {/* Password */}
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Password</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Password</Text>
           <View style={styles.passwordRow}>
             <TextInput
-              style={[styles.inputField, { flex: 1 }]}
+              style={[styles.inputField, { flex: 1, color: themeColors.text }]}
               placeholder="••••••••"
-              placeholderTextColor="#999"
+              placeholderTextColor={themeColors.subText}
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
@@ -327,7 +320,7 @@ const Login = () => {
               <Ionicons
                 name={showPassword ? "eye-outline" : "eye-off-outline"}
                 size={22}
-                color="#888"
+                color={themeColors.subText}
               />
             </Pressable>
           </View>
@@ -335,13 +328,13 @@ const Login = () => {
 
         {/* Confirm Password (sign up only) */}
         {!isLoginMode && (
-          <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>Confirm Password</Text>
+          <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
+            <Text style={[styles.inputLabel, { color: themeColors.text }]}>Confirm Password</Text>
             <View style={styles.passwordRow}>
               <TextInput
-                style={[styles.inputField, { flex: 1 }]}
+                style={[styles.inputField, { flex: 1, color: themeColors.text }]}
                 placeholder="••••••••"
-                placeholderTextColor="#999"
+                placeholderTextColor={themeColors.subText}
                 secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -350,7 +343,7 @@ const Login = () => {
                 <Ionicons
                   name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
                   size={22}
-                  color="#888"
+                  color={themeColors.subText}
                 />
               </Pressable>
             </View>
@@ -360,12 +353,12 @@ const Login = () => {
         {/* Terms Checkbox (sign up only) */}
         {!isLoginMode && (
           <Pressable style={styles.checkboxRow} onPress={() => setAgreed(!agreed)}>
-            <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
-              {agreed && <Feather name="check" size={14} color="white" />}
+            <View style={[styles.checkbox, agreed && styles.checkboxChecked, { borderColor: themeColors.primary, backgroundColor: agreed ? themeColors.primary : themeColors.cardBackground }]}>
+              {agreed && <Feather name="check" size={14} color={Color.colorWhite} />}
             </View>
-            <Text style={styles.termsText}>
-              I agree to the <Text style={styles.termsLink}>Terms of Service</Text> &{" "}
-              <Text style={styles.termsLink}>Privacy Policy</Text>
+            <Text style={[styles.termsText, { color: themeColors.text }]}> 
+              I agree to the <Text style={[styles.termsLink, { color: themeColors.primary }]}>Terms of Service</Text> &{" "}
+              <Text style={[styles.termsLink, { color: themeColors.primary }]}>Privacy Policy</Text>
             </Text>
           </Pressable>
         )}
@@ -377,7 +370,7 @@ const Login = () => {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="white" size="small" />
+            <ActivityIndicator color={Color.colorWhite} size="small" />
           ) : (
             <Text style={styles.signUpButtonText}>
               {isLoginMode ? "Log In" : "Sign Up"}
@@ -386,25 +379,25 @@ const Login = () => {
         </Pressable>
 
         {/* Or sign up with */}
-        <Text style={styles.orText}>
+        <Text style={[styles.orText, { color: themeColors.subText }]}> 
           Or {isLoginMode ? "log in" : "sign up"} with:
         </Text>
         <View style={styles.socialRow}>
-          <Pressable style={styles.socialCircle} onPress={handleSocialLogin("Google")}>
+          <Pressable style={[styles.socialCircle, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={handleSocialLogin("Google")}>
             <Text style={styles.googleG}>G</Text>
           </Pressable>
-          <Pressable style={styles.socialCircle} onPress={handleSocialLogin("Phone")}>
-            <Feather name="phone" size={20} color="black" />
+          <Pressable style={[styles.socialCircle, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={handleSocialLogin("Phone")}>
+            <Feather name="phone" size={20} color={themeColors.text} />
           </Pressable>
         </View>
 
         {/* Toggle login/signup */}
         <View style={styles.loginRow}>
-          <Text style={styles.alreadyText}>
+          <Text style={[styles.alreadyText, { color: themeColors.text }]}> 
             {isLoginMode ? "Don't have an account? " : "Already have an account? "}
           </Text>
           <Pressable onPress={() => setIsLoginMode(!isLoginMode)}>
-            <Text style={styles.loginLink}>
+            <Text style={[styles.loginLink, { color: themeColors.primary }]}> 
               {isLoginMode ? "Sign Up" : "Log In"}
             </Text>
           </Pressable>
@@ -420,28 +413,31 @@ const Login = () => {
         animationType="slide"
         onRequestClose={() => setShowPhoneModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+        <KeyboardAvoidingView 
+          style={styles.modalOverlay}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={[styles.modalCard, { backgroundColor: themeColors.cardBackground }]}> 
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { color: themeColors.text }]}> 
                 {otpSent ? "Enter OTP" : "Phone Login"}
               </Text>
               <Pressable onPress={() => setShowPhoneModal(false)}>
-                <Feather name="x" size={26} color={Color.colorBlack} />
+                <Feather name="x" size={26} color={themeColors.text} />
               </Pressable>
             </View>
 
             {!otpSent ? (
               <>
-                <Text style={styles.modalSubtitle}>
+                <Text style={[styles.modalSubtitle, { color: themeColors.subText }]}> 
                   Enter your phone number to receive a verification code
                 </Text>
-                <View style={styles.modalInputCard}>
-                  <Text style={styles.inputLabel}>Phone Number</Text>
+                <View style={[styles.modalInputCard, { backgroundColor: themeColors.elevatedBackground, borderColor: themeColors.divider }]}> 
+                  <Text style={[styles.inputLabel, { color: themeColors.text }]}>Phone Number</Text>
                   <TextInput
-                    style={styles.inputField}
+                    style={[styles.inputField, { color: themeColors.text }]}
                     placeholder="e.g., 8793091663"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={themeColors.subText}
                     keyboardType="phone-pad"
                     value={phoneInput}
                     onChangeText={setPhoneInput}
@@ -454,7 +450,7 @@ const Login = () => {
                   disabled={phoneLoading}
                 >
                   {phoneLoading ? (
-                    <ActivityIndicator color="white" size="small" />
+                    <ActivityIndicator color={Color.colorWhite} size="small" />
                   ) : (
                     <Text style={styles.signUpButtonText}>Send OTP</Text>
                   )}
@@ -462,21 +458,21 @@ const Login = () => {
               </>
             ) : (
               <>
-                <Text style={styles.modalSubtitle}>
+                <Text style={[styles.modalSubtitle, { color: themeColors.subText }]}> 
                   We sent a 6-digit code to {phoneInput}
                 </Text>
                 {demoOtp ? (
-                  <View style={styles.demoOtpBanner}>
-                    <Feather name="info" size={16} color="#2563EB" />
-                    <Text style={styles.demoOtpText}>Demo OTP: {demoOtp}</Text>
+                  <View style={[styles.demoOtpBanner, { backgroundColor: themeColors.elevatedBackground }]}> 
+                    <Feather name="info" size={16} color={themeColors.primary} />
+                    <Text style={[styles.demoOtpText, { color: themeColors.primary }]}>Demo OTP: {demoOtp}</Text>
                   </View>
                 ) : null}
-                <View style={styles.modalInputCard}>
-                  <Text style={styles.inputLabel}>Verification Code</Text>
+                <View style={[styles.modalInputCard, { backgroundColor: themeColors.elevatedBackground, borderColor: themeColors.divider }]}> 
+                  <Text style={[styles.inputLabel, { color: themeColors.text }]}>Verification Code</Text>
                   <TextInput
-                    style={[styles.inputField, styles.otpField]}
+                    style={[styles.inputField, styles.otpField, { color: themeColors.text }]}
                     placeholder="000000"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={themeColors.subText}
                     keyboardType="number-pad"
                     value={otpInput}
                     onChangeText={setOtpInput}
@@ -489,18 +485,18 @@ const Login = () => {
                   disabled={phoneLoading}
                 >
                   {phoneLoading ? (
-                    <ActivityIndicator color="white" size="small" />
+                    <ActivityIndicator color={Color.colorWhite} size="small" />
                   ) : (
                     <Text style={styles.signUpButtonText}>Verify & Login</Text>
                   )}
                 </Pressable>
                 <Pressable onPress={() => { setOtpSent(false); setOtpInput(""); }} style={styles.resendRow}>
-                  <Text style={styles.resendText}>Didn't receive? <Text style={styles.resendLink}>Resend OTP</Text></Text>
+                  <Text style={[styles.resendText, { color: themeColors.subText }]}>Didn't receive? <Text style={[styles.resendLink, { color: themeColors.primary }]}>Resend OTP</Text></Text>
                 </Pressable>
               </>
             )}
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

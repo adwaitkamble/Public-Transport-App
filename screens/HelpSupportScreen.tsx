@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useTheme } from "../context/ThemeContext";
 
 const faqs = [
   { id: 1, question: "How do I cancel my ticket?", answer: "You can cancel your ticket by navigating to the Travel History section, selecting your active ticket, and pressing the 'Cancel' button at the bottom." },
@@ -14,6 +15,7 @@ const faqs = [
 const HelpSupportScreen = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const { themeColors } = useTheme();
   const [message, setMessage] = React.useState("");
   const [expandedFaq, setExpandedFaq] = React.useState<number | null>(null);
   const [isSending, setIsSending] = React.useState(false);
@@ -47,52 +49,53 @@ const HelpSupportScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={[styles.container, { backgroundColor: themeColors.background }]}> 
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={Color.colorBlack} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Help & Support</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Help & Support</Text>
         <View style={styles.backBtn} />
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <View style={styles.contactCard}>
+        <View style={[styles.contactCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
           <Feather name="headphones" size={32} color={Color.colorRoyalblue} style={{ marginBottom: 10 }} />
-          <Text style={styles.contactTitle}>How can we help?</Text>
-          <Text style={styles.contactSubtitle}>We are here to help you 24/7</Text>
+          <Text style={[styles.contactTitle, { color: themeColors.text }]}>How can we help?</Text>
+          <Text style={[styles.contactSubtitle, { color: themeColors.subText }]}>We are here to help you 24/7</Text>
         </View>
 
-        <View style={styles.faqSection}>
-          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+        <View style={[styles.faqSection, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Frequently Asked Questions</Text>
           
           {faqs.map((faq, index) => (
             <View key={faq.id}>
               <Pressable style={styles.faqItem} onPress={() => toggleFaq(faq.id)}>
-                <Text style={styles.faqText}>{faq.question}</Text>
+                <Text style={[styles.faqText, { color: themeColors.text }]}>{faq.question}</Text>
                 <Feather 
                   name={expandedFaq === faq.id ? "chevron-up" : "chevron-down"} 
                   size={20} 
-                  color="#888" 
+                  color={themeColors.subText} 
                 />
               </Pressable>
               
               {expandedFaq === faq.id && (
                 <View style={styles.faqAnswerContainer}>
-                  <Text style={styles.faqAnswerText}>{faq.answer}</Text>
+                  <Text style={[styles.faqAnswerText, { color: themeColors.subText }]}>{faq.answer}</Text>
                 </View>
               )}
-              {index < faqs.length - 1 && <View style={styles.divider} />}
+              {index < faqs.length - 1 && <View style={[styles.divider, { backgroundColor: themeColors.divider }]} />}
             </View>
           ))}
         </View>
 
-        <View style={styles.messageSection}>
-          <Text style={styles.sectionTitle}>Send us a message</Text>
-          <View style={styles.inputContainer}>
+        <View style={[styles.messageSection, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Send us a message</Text>
+          <View style={[styles.inputContainer, { backgroundColor: themeColors.elevatedBackground, borderColor: themeColors.divider }] }>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: themeColors.text }]}
               placeholder="Describe your issue in detail..."
+              placeholderTextColor={themeColors.subText}
               multiline
               numberOfLines={4}
               value={message}
@@ -119,23 +122,23 @@ const HelpSupportScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Color.colorGainsboro },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingBottom: 16, backgroundColor: Color.colorGainsboro },
+  container: { flex: 1 },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingBottom: 16 },
   backBtn: { width: 40, height: 40, justifyContent: "center" },
-  headerTitle: { fontSize: 20, fontWeight: "800", color: Color.colorBlack, fontFamily: FontFamily.poppins },
+  headerTitle: { fontSize: 20, fontWeight: "800", fontFamily: FontFamily.poppins },
   content: { padding: 20 },
-  contactCard: { backgroundColor: Color.colorWhite, borderRadius: Border.br_16, padding: 20, alignItems: "center", marginBottom: 20 },
-  contactTitle: { fontSize: 18, fontWeight: "800", fontFamily: FontFamily.poppins, color: Color.colorBlack },
-  contactSubtitle: { fontSize: 14, fontFamily: FontFamily.inter, color: "#888", marginTop: 5 },
-  faqSection: { backgroundColor: Color.colorWhite, borderRadius: Border.br_16, padding: 15, marginBottom: 20 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", fontFamily: FontFamily.poppins, marginBottom: 15, color: Color.colorBlack },
+  contactCard: { borderRadius: Border.br_16, padding: 20, alignItems: "center", marginBottom: 20, borderWidth: 1 },
+  contactTitle: { fontSize: 18, fontWeight: "800", fontFamily: FontFamily.poppins },
+  contactSubtitle: { fontSize: 14, fontFamily: FontFamily.inter, marginTop: 5 },
+  faqSection: { borderRadius: Border.br_16, padding: 15, marginBottom: 20, borderWidth: 1 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", fontFamily: FontFamily.poppins, marginBottom: 15 },
   faqItem: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 12 },
-  faqText: { fontSize: 15, fontFamily: FontFamily.inter, color: Color.colorBlack, flex: 1, paddingRight: 10 },
+  faqText: { fontSize: 15, fontFamily: FontFamily.inter, flex: 1, paddingRight: 10 },
   faqAnswerContainer: { paddingBottom: 12, paddingRight: 20 },
-  faqAnswerText: { fontSize: 14, fontFamily: FontFamily.inter, color: "#666", lineHeight: 20 },
-  divider: { height: 1, backgroundColor: "#f0f0f0" },
-  messageSection: { backgroundColor: Color.colorWhite, borderRadius: Border.br_16, padding: 15, marginBottom: 30 },
-  inputContainer: { borderWidth: 1, borderColor: "#e0e0e0", borderRadius: Border.br_12, padding: 12, backgroundColor: "#fafafa", marginBottom: 15 },
+  faqAnswerText: { fontSize: 14, fontFamily: FontFamily.inter, lineHeight: 20 },
+  divider: { height: 1 },
+  messageSection: { borderRadius: Border.br_16, padding: 15, marginBottom: 30, borderWidth: 1 },
+  inputContainer: { borderWidth: 1, borderRadius: Border.br_12, padding: 12, marginBottom: 15 },
   input: { minHeight: 100, fontSize: 15, fontFamily: FontFamily.inter },
   sendButton: { backgroundColor: Color.colorRoyalblue, borderRadius: Border.br_12, paddingVertical: 14, alignItems: "center" },
   sendButtonDisabled: { opacity: 0.7 },

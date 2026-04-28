@@ -10,6 +10,7 @@ import {
   Color,
   Border,
 } from "../GlobalStyles";
+import { useTheme } from "../context/ThemeContext";
 
 const RouteCard = ({
   iconType,
@@ -20,10 +21,10 @@ const RouteCard = ({
   isFilledStar,
 }: any) => {
   return (
-    <Pressable style={styles.cardContainer}>
+    <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
       {iconType === "boxIcon" ? (
-        <View style={styles.iconBox}>
-          <MaterialCommunityIcons name={iconContent} size={42} color="black" />
+        <View style={[styles.iconBox, { backgroundColor: themeColors.elevatedBackground, borderColor: themeColors.divider }] }>
+          <MaterialCommunityIcons name={iconContent} size={42} color={themeColors.text} />
         </View>
       ) : (
         <View style={[styles.iconBox, { backgroundColor: Color.colorRoyalblue }]}>
@@ -32,8 +33,8 @@ const RouteCard = ({
       )}
 
       <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.cardSubtitle}>{subtitle}</Text>
+        <Text style={[styles.cardTitle, { color: themeColors.text }]}>{title}</Text>
+        <Text style={[styles.cardSubtitle, { color: themeColors.subText }]}>{subtitle}</Text>
       </View>
 
       <View style={styles.cardTimeContainer}>
@@ -41,16 +42,16 @@ const RouteCard = ({
           <View style={styles.starWrapper}>
              <FontAwesome name="star" size={24} color="#FFD700" />
              <View style={styles.starOutline}>
-               <FontAwesome name="star-o" size={24} color="black" />
+               <FontAwesome name="star-o" size={24} color={themeColors.text} />
              </View>
           </View>
         ) : (
           <View style={styles.starWrapper}>
-             <FontAwesome name="star-o" size={24} color="black" />
+             <FontAwesome name="star-o" size={24} color={themeColors.text} />
           </View>
         )}
-        <Text style={styles.etaText}>ETA</Text>
-        <Text style={styles.cardTime}>{time}</Text>
+        <Text style={[styles.etaText, { color: themeColors.text }]}>ETA</Text>
+        <Text style={[styles.cardTime, { color: themeColors.primary }]}>{time}</Text>
       </View>
     </Pressable>
   );
@@ -59,15 +60,16 @@ const RouteCard = ({
 const FavoritePage = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  const { themeColors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.favoritePage} edges={["top", "left", "right"]}>
-      <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16) }]}>
+    <SafeAreaView style={[styles.favoritePage, { backgroundColor: themeColors.background }]} edges={["top", "left", "right"]}>
+      <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
         <View style={styles.headerRow}>
           <Pressable onPress={() => navigation.navigate("Menu")}>
-            <Feather name="menu" size={32} color="black" />
+            <Feather name="menu" size={32} color={themeColors.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Route Results</Text>
+          <Text style={[styles.headerTitle, { color: themeColors.text }]}>Route Results</Text>
           <Pressable onPress={() => {}}>
             <Image
               style={styles.headerIcon}
@@ -84,7 +86,7 @@ const FavoritePage = () => {
         contentContainerStyle={styles.favoritePageScrollViewContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionTitle}>Saved Routes</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Saved Routes</Text>
         
         <RouteCard 
           iconType="boxIcon"
@@ -93,6 +95,7 @@ const FavoritePage = () => {
           subtitle="Bus 21A"
           time="20 min"
           isFilledStar={true}
+          themeColors={themeColors}
         />
         <RouteCard 
           iconType="boxIcon"
@@ -101,11 +104,12 @@ const FavoritePage = () => {
           subtitle="Bus 45 B"
           time="44 min"
           isFilledStar={true}
+          themeColors={themeColors}
         />
 
         <View style={styles.spacer} />
         
-        <Text style={styles.sectionTitle}>Recent Trips</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Recent Trips</Text>
         
         <RouteCard 
           iconType="busBadge"
@@ -114,6 +118,7 @@ const FavoritePage = () => {
           subtitle="Station → Mall"
           time="24 min"
           isFilledStar={false}
+          themeColors={themeColors}
         />
         <RouteCard 
           iconType="busBadge"
@@ -122,6 +127,7 @@ const FavoritePage = () => {
           subtitle="Airport → City Center"
           time="58 min"
           isFilledStar={false}
+          themeColors={themeColors}
         />
         
       </ScrollView>
@@ -134,7 +140,6 @@ const FavoritePage = () => {
 const styles = StyleSheet.create({
   favoritePage: {
     width: "100%",
-    backgroundColor: Color.colorGainsboro || "#DDE3EB",
     flex: 1,
   },
   headerContainer: {
@@ -160,7 +165,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "900",
-    color: Color.colorBlack,
     fontFamily: FontFamily.poppins,
     textAlign: "center",
   },
@@ -177,15 +181,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: FontFamily.poppins,
     fontWeight: "900",
-    color: Color.colorBlack,
     marginBottom: 4,
     marginTop: 16,
   },
   cardContainer: {
-    backgroundColor: Color.colorWhite,
     borderRadius: Border.br_16,
     borderWidth: 1.5,
-    borderColor: Color.colorBlack,
     paddingHorizontal: 16,
     paddingVertical: 16,
     flexDirection: "row",
@@ -201,10 +202,8 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: Color.colorBlack,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Color.colorWhite,
     marginRight: 16,
   },
   busBadgeText: {
@@ -222,13 +221,11 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.poppins,
     fontSize: 16,
     fontWeight: "800",
-    color: Color.colorBlack,
   },
   cardSubtitle: {
     fontFamily: FontFamily.poppins,
     fontSize: 14,
     fontWeight: "600",
-    color: Color.colorBlack,
   },
   cardTimeContainer: {
     justifyContent: "space-between",
@@ -252,7 +249,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.poppins,
     fontSize: 14,
     fontWeight: "800",
-    color: Color.colorBlack,
   },
   cardTime: {
     fontFamily: FontFamily.poppins,

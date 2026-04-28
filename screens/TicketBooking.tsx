@@ -12,6 +12,7 @@ import {
 } from "../GlobalStyles";
 import { Feather, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { bookTicket } from '../services/api';
+import { useTheme } from "../context/ThemeContext";
 
 const UpiAppIcon = ({ title, badgeText, color, icon, customSize }: any) => (
   <View style={styles.upiAppBox}>
@@ -50,6 +51,7 @@ const BankRow = ({ name, iconColor, letter, isSquare, isSlanted, isCircle }: any
 const TicketBooking = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
+  const { themeColors } = useTheme();
   const [paymentMethod, setPaymentMethod] = React.useState('upi');
   const [loading, setLoading] = React.useState(false);
 
@@ -68,20 +70,20 @@ const TicketBooking = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}> 
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
         <Pressable onPress={() => navigation.canGoBack() ? navigation.goBack() : {}}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-21.png")}
           />
         </Pressable>
-        <Text style={styles.headerTitle}>Smart Bus</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Smart Bus</Text>
         <Pressable onPress={() => { }}>
           <Image
-            style={styles.headerIcon}
+            style={[styles.headerIcon, { tintColor: themeColors.icon }]}
             contentFit="contain"
             source={require("../assets/image-3.png")}
           />
@@ -93,44 +95,44 @@ const TicketBooking = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.pageTitle}>Payment Methods</Text>
+        <Text style={[styles.pageTitle, { color: themeColors.text }]}>Payment Methods</Text>
 
         {/* DAILY PASS */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
           <View style={styles.rowBetweenBase}>
             <View style={styles.gap4}>
-              <Text style={styles.cardTitle}>DAILY PASS</Text>
-              <Text style={styles.cardSubText}>Valid: 24 HR</Text>
+              <Text style={[styles.cardTitle, { color: themeColors.text }]}>DAILY PASS</Text>
+              <Text style={[styles.cardSubText, { color: themeColors.subText }]}>Valid: 24 HR</Text>
             </View>
             <View style={styles.alignEnd}>
               <View style={styles.iconRow}>
-                <Feather name="edit" size={20} color="black" />
-                <Feather name="info" size={20} color="black" />
+                <Feather name="edit" size={20} color={themeColors.text} />
+                <Feather name="info" size={20} color={themeColors.text} />
               </View>
-              <Text style={styles.priceText}>PRICE: ₹50.00</Text>
+              <Text style={[styles.priceText, { color: themeColors.text }]}>PRICE: ₹50.00</Text>
             </View>
           </View>
         </View>
 
         {/* UPI SECTION */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>UPI</Text>
+          <Text style={[styles.sectionTitle, { color: themeColors.text }]}>UPI</Text>
           <View style={styles.upiLogoGroup}>
-            <Text style={styles.upiLogoText}>UPI</Text>
-            <FontAwesome5 name="caret-right" size={16} color="#03a124" style={styles.upiLogoCaret} />
+            <Text style={[styles.upiLogoText, { color: themeColors.primary }]}>UPI</Text>
+            <FontAwesome5 name="caret-right" size={16} color={themeColors.primary} style={styles.upiLogoCaret} />
           </View>
         </View>
 
-        <View style={[styles.card, styles.upiCard]}>
+        <View style={[styles.card, styles.upiCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
           <View style={styles.upiInputArea}>
-            <Text style={styles.upiInputLabel}>Enter UPI ID</Text>
+            <Text style={[styles.upiInputLabel, { color: themeColors.text }]}>Enter UPI ID</Text>
             <TextInput
-              style={styles.upiInputField}
+              style={[styles.upiInputField, { color: themeColors.text }]}
               placeholder="e.g., name@bank"
-              placeholderTextColor="#666"
+              placeholderTextColor={themeColors.subText}
             />
-            <View style={styles.inputUnderline} />
-            <Text style={styles.verifyLink}>Verify</Text>
+            <View style={[styles.inputUnderline, { backgroundColor: themeColors.divider }]} />
+            <Text style={[styles.verifyLink, { color: themeColors.primary }]}>Verify</Text>
           </View>
 
           <View style={styles.upiIconsArea}>
@@ -153,16 +155,16 @@ const TicketBooking = () => {
         </View>
 
         {/* NETBANKING SECTION */}
-        <Text style={[styles.sectionTitle, styles.netbankingTitle]}>NETBANKING</Text>
-        <View style={[styles.card, styles.paddedCard]}>
+        <Text style={[styles.sectionTitle, styles.netbankingTitle, { color: themeColors.text }]}>NETBANKING</Text>
+        <View style={[styles.card, styles.paddedCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
           <BankRow name="HDFC Bank" iconColor="#ed1b24" isSquare={true} />
           <BankRow name="ICICI Bank" iconColor="#f26522" letter="i" isSlanted={true} />
           <BankRow name="State Bank of India" iconColor="#005b9f" isCircle={true} />
           <BankRow name="Axis Bank" iconColor="#97144d" letter="A" />
 
           <View style={styles.viewAllRow}>
-            <Text style={styles.viewAllText}>View All Banks</Text>
-            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+            <Text style={[styles.viewAllText, { color: themeColors.text }]}>View All Banks</Text>
+            <MaterialIcons name="arrow-drop-down" size={24} color={themeColors.text} />
           </View>
         </View>
 
@@ -171,12 +173,12 @@ const TicketBooking = () => {
       </KeyboardAwareScrollView>
 
       {/* Floating Checkout Bar */}
-      <View style={styles.checkoutBar}>
+      <View style={[styles.checkoutBar, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
         <View style={styles.checkoutHeader}>
-          <Text style={styles.totalText}>Total to Pay: ₹50.00</Text>
+          <Text style={[styles.totalText, { color: themeColors.text }]}>Total to Pay: ₹50.00</Text>
           <View style={styles.secureBadge}>
-            <Feather name="lock" size={14} color="black" style={styles.lockIcon} />
-            <Text style={styles.secureText}>SECURE CHECKOUT</Text>
+            <Feather name="lock" size={14} color={themeColors.text} style={styles.lockIcon} />
+            <Text style={[styles.secureText, { color: themeColors.text }]}>SECURE CHECKOUT</Text>
           </View>
         </View>
 

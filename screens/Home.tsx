@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: "100%",
-    height: 140,
+    height: 350,
     borderRadius: Border.br_12,
     borderWidth: 1,
     borderColor: Color.colorBlack,

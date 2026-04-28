@@ -11,10 +11,12 @@ import {
   BoxShadow,
   Padding,
 } from "../GlobalStyles";
+import { useTheme } from "../context/ThemeContext";
 
 const Route = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  const { themeColors } = useTheme();
 
   // Interactive State
   const [fromLocation, setFromLocation] = React.useState("");
@@ -27,16 +29,16 @@ const Route = () => {
   };
 
   return (
-    <SafeAreaView style={styles.route} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.route, { backgroundColor: themeColors.background }]} edges={["top", "left", "right"]}>
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16) }]}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => navigation.navigate("Menu")}>
-            <Feather name="menu" size={32} color="black" />
+            <Feather name="menu" size={32} color={themeColors.text} />
           </Pressable>
-          <Text style={styles.planYourRoute}>Plan your route</Text>
+          <Text style={[styles.planYourRoute, { color: themeColors.text }]}>Plan your route</Text>
           <Pressable onPress={() => {}}>
-            <MaterialCommunityIcons name="bell" size={28} color="black" />
+            <MaterialCommunityIcons name="bell" size={28} color={themeColors.text} />
           </Pressable>
         </View>
       </View>
@@ -51,13 +53,13 @@ const Route = () => {
         <View style={styles.formGroup}>
           
           {/* FROM Card */}
-          <View style={styles.inputCard}>
+          <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
             <View style={styles.inputRow}>
               <View style={styles.iconWrapper}>
-                <Ionicons name="ellipse-outline" size={24} color="black" style={{ fontWeight: '900' }} />
+                <Ionicons name="ellipse-outline" size={24} color={themeColors.text} style={{ fontWeight: '900' }} />
               </View>
               <TextInput 
-                style={styles.textInputLabel}
+                style={[styles.textInputLabel, { color: themeColors.text }]}
                 value="From"
                 editable={false}
               />
@@ -69,14 +71,14 @@ const Route = () => {
             
             <View style={styles.inputRow}>
               <View style={styles.iconWrapper}>
-                <Ionicons name="radio-button-on" size={24} color="black" />
+                <Ionicons name="radio-button-on" size={24} color={themeColors.text} />
               </View>
               <TextInput 
-                style={[styles.textInputActive, { color: fromLocation ? Color.colorBlack : Color.colorDimgray }]}
+                style={[styles.textInputActive, { color: fromLocation ? themeColors.text : themeColors.subText }]}
                 value={fromLocation}
                 onChangeText={setFromLocation}
                 placeholder="Current location"
-                placeholderTextColor={Color.colorDimgray}
+                placeholderTextColor={themeColors.subText}
               />
             </View>
           </View>
@@ -84,18 +86,18 @@ const Route = () => {
           {/* Swap Button overlay */}
           <View style={styles.swapButtonWrapper} pointerEvents="box-none">
             <Pressable style={styles.swapButton} onPress={handleSwap}>
-              <Ionicons name="swap-vertical" size={24} color="black" style={styles.swapIcon} />
+              <Ionicons name="swap-vertical" size={24} color={themeColors.text} style={styles.swapIcon} />
             </Pressable>
           </View>
 
           {/* TO Card */}
-          <View style={[styles.inputCard, { marginTop: 12 }]}>
+          <View style={[styles.inputCard, { marginTop: 12, backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
             <View style={styles.inputRow}>
               <View style={styles.iconWrapper}>
-                <Ionicons name="ellipse-outline" size={24} color="black" style={{ fontWeight: '900' }} />
+                <Ionicons name="ellipse-outline" size={24} color={themeColors.text} style={{ fontWeight: '900' }} />
               </View>
               <TextInput 
-                style={styles.textInputLabel}
+                style={[styles.textInputLabel, { color: themeColors.text }]}
                 value="To"
                 editable={false}
               />
@@ -107,14 +109,14 @@ const Route = () => {
 
             <View style={styles.inputRow}>
               <View style={styles.iconWrapper}>
-                <Ionicons name="radio-button-on" size={24} color="black" />
+                <Ionicons name="radio-button-on" size={24} color={themeColors.text} />
               </View>
               <TextInput 
-                style={[styles.textInputActive, { color: toLocation ? Color.colorBlack : Color.colorDimgray }]}
+                style={[styles.textInputActive, { color: toLocation ? themeColors.text : themeColors.subText }]}
                 value={toLocation}
                 onChangeText={setToLocation}
                 placeholder="Enter destination"
-                placeholderTextColor={Color.colorDimgray}
+                placeholderTextColor={themeColors.subText}
               />
             </View>
           </View>
@@ -124,7 +126,7 @@ const Route = () => {
         {/* Find Route Button */}
         <View style={styles.routeButtonWrapper}>
           <Pressable
-            style={styles.routeButton}
+            style={[styles.routeButton, { borderColor: themeColors.divider }]}
             onPress={() => navigation.navigate("SearchResults")}
           >
             <Text style={styles.findRoute}>Find Route</Text>
@@ -143,10 +145,10 @@ const Route = () => {
           ].map((item, index) => (
             <Pressable key={index} style={styles.recentSearchCard} onPress={() => setToLocation(item.name)}>
               <View style={styles.recentIconWrapper}>
-                <MaterialCommunityIcons name="map-marker-radius-outline" size={26} color="black" style={{ fontWeight: '900' }} />
+                <MaterialCommunityIcons name="map-marker-radius-outline" size={26} color={themeColors.text} style={{ fontWeight: '900' }} />
               </View>
-              <Text style={styles.recentSearchName}>{item.name}</Text>
-              <Text style={styles.recentSearchDist}>{item.dist}</Text>
+              <Text style={[styles.recentSearchName, { color: themeColors.text }]}>{item.name}</Text>
+              <Text style={[styles.recentSearchDist, { color: themeColors.subText }]}>{item.dist}</Text>
             </Pressable>
           ))}
         </View>

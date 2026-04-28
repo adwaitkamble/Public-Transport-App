@@ -27,31 +27,33 @@ const SettingsScreen = () => {
           <Text style={[styles.sectionTitle, { color: themeColors.text }]}>App Preferences</Text>
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="moon" size={20} color={Color.colorRoyalblue} />
+              <Feather name="moon" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>Dark Mode</Text>
             </View>
             <Switch
               value={isDarkMode}
               onValueChange={toggleDarkMode}
-              trackColor={{ false: "#e0e0e0", true: Color.colorRoyalblue }}
+              trackColor={{ false: themeColors.divider, true: themeColors.primary }}
+              thumbColor={Color.colorWhite}
             />
           </View>
           <View style={[styles.settingDivider, { backgroundColor: themeColors.divider }]} />
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="map-pin" size={20} color={Color.colorRoyalblue} />
+              <Feather name="map-pin" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>Location Services</Text>
             </View>
             <Switch
               value={locationServices}
               onValueChange={setLocationServices}
-              trackColor={{ false: "#e0e0e0", true: Color.colorRoyalblue }}
+              trackColor={{ false: themeColors.divider, true: themeColors.primary }}
+              thumbColor={Color.colorWhite}
             />
           </View>
           <View style={[styles.settingDivider, { backgroundColor: themeColors.divider }]} />
           <Pressable style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="globe" size={20} color={Color.colorRoyalblue} />
+              <Feather name="globe" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>Language</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -65,7 +67,7 @@ const SettingsScreen = () => {
           <Text style={[styles.sectionTitle, { color: themeColors.text }]}>About</Text>
           <Pressable style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="file-text" size={20} color={Color.colorRoyalblue} />
+              <Feather name="file-text" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>Terms of Service</Text>
             </View>
             <Feather name="chevron-right" size={20} color={themeColors.subText} />
@@ -73,7 +75,7 @@ const SettingsScreen = () => {
           <View style={[styles.settingDivider, { backgroundColor: themeColors.divider }]} />
           <Pressable style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="shield" size={20} color={Color.colorRoyalblue} />
+              <Feather name="shield" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>Privacy Policy</Text>
             </View>
             <Feather name="chevron-right" size={20} color={themeColors.subText} />
@@ -81,7 +83,7 @@ const SettingsScreen = () => {
           <View style={[styles.settingDivider, { backgroundColor: themeColors.divider }]} />
           <Pressable style={styles.settingItem}>
             <View style={styles.settingLeft}>
-              <Feather name="info" size={20} color={Color.colorRoyalblue} />
+              <Feather name="info" size={20} color={themeColors.primary} />
               <Text style={[styles.settingText, { color: themeColors.text }]}>App Version</Text>
             </View>
             <Text style={{ color: themeColors.subText }}>1.0.0</Text>

@@ -89,12 +89,15 @@ export const registerUser = async (
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
+  const response = await safeFetch(`${getApiBaseUrl()}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   const data = await handleResponse(response);
+  if (!data?.token) {
+    throw new Error("Login succeeded but the server did not return an auth token.");
+  }
   await AsyncStorage.setItem("token", data.token);
   await AsyncStorage.setItem("user", JSON.stringify(data));
   return data;

@@ -12,11 +12,13 @@ import {
   FontFamily,
   FontSize,
 } from "../GlobalStyles";
+import { useTheme } from "../context/ThemeContext";
 
 const RouteCard = ({ bus1, bus2, time, transfers, crowdLevel, eta }: any) => {
   const navigation = useNavigation<any>();
+  const { themeColors } = useTheme();
   return (
-    <Pressable style={styles.cardContainer} onPress={() => navigation.navigate("Map")}>
+    <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => navigation.navigate("Map")}>
       <View style={styles.cardLeft}>
         <View style={styles.busNumberRow}>
           <View style={styles.busBadge}>
@@ -24,7 +26,7 @@ const RouteCard = ({ bus1, bus2, time, transfers, crowdLevel, eta }: any) => {
           </View>
           {bus2 && (
             <>
-              <Text style={styles.arrowText}>→</Text>
+              <Text style={[styles.arrowText, { color: themeColors.text }]}>→</Text>
               <View style={styles.busBadge}>
                 <Text style={styles.busBadgeText}>{bus2}</Text>
               </View>
@@ -33,10 +35,10 @@ const RouteCard = ({ bus1, bus2, time, transfers, crowdLevel, eta }: any) => {
         </View>
 
         <View style={styles.detailsColumn}>
-          <Text style={styles.timeText}>{time}</Text>
-          <Text style={styles.transferText}>{transfers}</Text>
+          <Text style={[styles.timeText, { color: themeColors.text }]}>{time}</Text>
+          <Text style={[styles.transferText, { color: themeColors.subText }]}>{transfers}</Text>
           <View style={styles.crowdRow}>
-            <Text style={styles.crowdLabel}>Crowd</Text>
+            <Text style={[styles.crowdLabel, { color: themeColors.subText }]}>Crowd</Text>
             <View
               style={[
                 styles.crowdBadge,
@@ -65,8 +67,8 @@ const RouteCard = ({ bus1, bus2, time, transfers, crowdLevel, eta }: any) => {
           contentFit="contain"
         />
         <View style={styles.etaContainer}>
-          <Text style={styles.etaLabel}>ETA</Text>
-          <Text style={styles.etaValue}>{eta}</Text>
+          <Text style={[styles.etaLabel, { color: themeColors.subText }]}>ETA</Text>
+          <Text style={[styles.etaValue, { color: themeColors.primary }]}>{eta}</Text>
         </View>
       </View>
     </Pressable>
@@ -79,11 +81,12 @@ type SearchResultsProps = {
 
 const SearchResults = ({ embedded = false }: SearchResultsProps) => {
   const insets = useSafeAreaInsets();
+  const { themeColors } = useTheme();
   return (
-    <View style={[styles.searchResults, embedded && styles.searchResultsEmbedded]}>
+    <View style={[styles.searchResults, { backgroundColor: themeColors.background }, embedded && styles.searchResultsEmbedded]}>
       {/* Header */}
       {!embedded && (
-        <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16) }]}>
+        <View style={[styles.headerContainer, { paddingTop: Math.max(insets.top, 16), backgroundColor: themeColors.headerBg }]}> 
           <View style={styles.headerRow}>
             <Pressable onPress={() => {}}>
               <Image
@@ -92,7 +95,7 @@ const SearchResults = ({ embedded = false }: SearchResultsProps) => {
                 source={require("../assets/image-21.png")}
               />
             </Pressable>
-            <Text style={styles.headerTitle}>Route Results</Text>
+            <Text style={[styles.headerTitle, { color: themeColors.text }]}>Route Results</Text>
             <Pressable onPress={() => {}}>
               <Image
                 style={styles.headerIcon}
@@ -103,7 +106,7 @@ const SearchResults = ({ embedded = false }: SearchResultsProps) => {
           </View>
         </View>
       )}
-      {!embedded && <View style={styles.headerDivider} />}
+      {!embedded && <View style={[styles.headerDivider, { backgroundColor: themeColors.divider }]} />}
 
       <ScrollView
         style={[{ flex: 1 }, embedded && styles.searchResultsEmbedded]}
@@ -114,7 +117,7 @@ const SearchResults = ({ embedded = false }: SearchResultsProps) => {
         showsVerticalScrollIndicator={false}
         scrollEnabled={!embedded}
       >
-        <Text style={styles.sectionTitle}>Recommended</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Recommended</Text>
         <RouteCard
           bus1="21 A"
           bus2="45 B"
@@ -124,7 +127,7 @@ const SearchResults = ({ embedded = false }: SearchResultsProps) => {
           eta="35 min"
         />
 
-        <Text style={[styles.sectionTitle, { marginTop: 4 }]}>All Routes Found</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 4, color: themeColors.text }]}>All Routes Found</Text>
 
         <RouteCard
           bus1="21 A"

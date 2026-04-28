@@ -15,6 +15,7 @@ import {
   BoxShadow,
   Width,
 } from "../GlobalStyles";
+import { useTheme } from "../context/ThemeContext";
 
 type Map1Props = {
   embedded?: boolean;
@@ -24,9 +25,10 @@ const Map1 = ({ embedded = false }: Map1Props) => {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  const { themeColors } = useTheme();
   const mapHeight = embedded
     ? 230
-    : Math.max(210, Math.min(280, Math.round(height * 0.38)));
+    : height * 0.60; // 60% of the screen height
 
   const mapHtml = `
   <!DOCTYPE html>
@@ -81,7 +83,7 @@ const Map1 = ({ embedded = false }: Map1Props) => {
   `;
 
   const content = (
-    <View style={styles.content}>
+    <View style={[styles.content, { backgroundColor: themeColors.background }]}> 
       <View style={styles.topSection}>
         <View style={styles.headerRow}>
           <Pressable style={styles.backIconWrapper}>
@@ -91,12 +93,12 @@ const Map1 = ({ embedded = false }: Map1Props) => {
               source={require("../assets/image-12.png")}
             />
           </Pressable>
-          <Text style={styles.title}>Bus 21 A</Text>
+          <Text style={[styles.title, { color: themeColors.text }]}>Bus 21 A</Text>
           <View style={styles.backIconWrapper} />
         </View>
-        <Text style={styles.subtitle}>Station → City Center</Text>
+        <Text style={[styles.subtitle, { color: themeColors.subText }]}>Station → City Center</Text>
 
-        <View style={styles.cardContainer}>
+        <View style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}> 
           {Platform.OS === 'web' ? (
             <iframe
               srcDoc={mapHtml}
@@ -176,7 +178,6 @@ const Map1 = ({ embedded = false }: Map1Props) => {
 const styles = StyleSheet.create({
   map: {
     width: "100%",
-    backgroundColor: Color.colorGainsboro,
     flex: 1,
   },
   mainContent: {
@@ -190,7 +191,6 @@ const styles = StyleSheet.create({
   },
   mapEmbedded: {
     width: "100%",
-    backgroundColor: Color.colorGainsboro,
     alignItems: "center",
     paddingBottom: 20,
   },
@@ -228,22 +228,18 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: FontFamily.poppins,
     fontWeight: "900",
-    color: Color.colorBlack,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: FontFamily.inter,
     fontWeight: "500",
-    color: Color.colorBlack,
     marginBottom: 16,
   },
   cardContainer: {
     width: "100%",
     flex: 1,
-    backgroundColor: Color.colorWhite,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: Color.colorBlack,
     borderRadius: Border.br_12, // Giving it standard border radius
     marginHorizontal: 0,
   },

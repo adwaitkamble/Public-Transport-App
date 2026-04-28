@@ -7,12 +7,14 @@ import { Feather } from "@expo/vector-icons";
 import { Color, Border, FontFamily } from "../GlobalStyles";
 import { updateProfile } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CompleteProfile = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { user, setUser } = useAuth();
+  const { themeColors } = useTheme();
 
   const [loading, setLoading] = React.useState(false);
   
@@ -52,35 +54,35 @@ const CompleteProfile = () => {
 
   return (
     <KeyboardAvoidingView 
-      style={styles.container} 
+      style={[styles.container, { backgroundColor: themeColors.background }]} 
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView 
         contentContainerStyle={[styles.scrollContent, { paddingTop: Math.max(insets.top, 20) + 20 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.pageTitle}>Complete Your Profile</Text>
-        <Text style={styles.pageSubtitle}>
+        <Text style={[styles.pageTitle, { color: themeColors.text }]}>Complete Your Profile</Text>
+        <Text style={[styles.pageSubtitle, { color: themeColors.subText }]}>
           Just a few more details to get you started with Smart Bus.
         </Text>
 
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Full Name</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Full Name</Text>
           <TextInput
-            style={styles.inputField}
+            style={[styles.inputField, { color: themeColors.text }]}
             placeholder="e.g., John Doe"
-            placeholderTextColor="#999"
+            placeholderTextColor={themeColors.subText}
             value={fullName}
             onChangeText={setFullName}
           />
         </View>
 
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Email Address</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Email Address</Text>
           <TextInput
-            style={styles.inputField}
+            style={[styles.inputField, { color: themeColors.text }]}
             placeholder="e.g., john@example.com"
-            placeholderTextColor="#999"
+            placeholderTextColor={themeColors.subText}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -88,15 +90,15 @@ const CompleteProfile = () => {
           />
         </View>
 
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Gender</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Gender</Text>
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={gender}
               onValueChange={(itemValue) => setGender(itemValue)}
-              style={styles.picker}
+              style={[styles.picker, { color: themeColors.text }]}
             >
-              <Picker.Item label="Select Gender" value="" color="#999" />
+              <Picker.Item label="Select Gender" value="" color={themeColors.subText} />
               <Picker.Item label="Male" value="Male" />
               <Picker.Item label="Female" value="Female" />
               <Picker.Item label="Other" value="Other" />
@@ -105,12 +107,12 @@ const CompleteProfile = () => {
           </View>
         </View>
 
-        <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Location (City)</Text>
+        <View style={[styles.inputCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }] }>
+          <Text style={[styles.inputLabel, { color: themeColors.text }]}>Location (City)</Text>
           <TextInput
-            style={styles.inputField}
+            style={[styles.inputField, { color: themeColors.text }]}
             placeholder="e.g., Pune"
-            placeholderTextColor="#999"
+            placeholderTextColor={themeColors.subText}
             value={location}
             onChangeText={setLocation}
           />
@@ -122,7 +124,7 @@ const CompleteProfile = () => {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="white" size="small" />
+            <ActivityIndicator color={Color.colorWhite} size="small" />
           ) : (
             <Text style={styles.submitButtonText}>Save & Continue</Text>
           )}
@@ -135,7 +137,6 @@ const CompleteProfile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.colorGainsboro,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -145,21 +146,17 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "900",
     fontFamily: FontFamily.poppins,
-    color: Color.colorBlack,
     marginBottom: 8,
   },
   pageSubtitle: {
     fontSize: 16,
     fontFamily: FontFamily.inter,
-    color: "#555",
     marginBottom: 30,
     lineHeight: 22,
   },
   inputCard: {
-    backgroundColor: Color.colorWhite,
     borderRadius: Border.br_16,
     borderWidth: 1.5,
-    borderColor: Color.colorBlack,
     paddingHorizontal: 18,
     paddingTop: 12,
     paddingBottom: 14,
@@ -169,13 +166,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "900",
     fontFamily: FontFamily.poppins,
-    color: Color.colorBlack,
     marginBottom: 4,
   },
   inputField: {
     fontSize: 15,
     fontFamily: FontFamily.inter,
-    color: Color.colorBlack,
     paddingVertical: 2,
     flex: 1,
   },
