@@ -66,7 +66,7 @@ const Route = () => {
             </View>
             
             <View style={styles.dividerWrapper}>
-              <View style={styles.hollowDivider} />
+              <View style={[styles.hollowDivider, { borderColor: themeColors.divider }]} />
             </View>
             
             <View style={styles.inputRow}>
@@ -85,7 +85,7 @@ const Route = () => {
 
           {/* Swap Button overlay */}
           <View style={styles.swapButtonWrapper} pointerEvents="box-none">
-            <Pressable style={styles.swapButton} onPress={handleSwap}>
+            <Pressable style={[styles.swapButton, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={handleSwap}>
               <Ionicons name="swap-vertical" size={24} color={themeColors.text} style={styles.swapIcon} />
             </Pressable>
           </View>
@@ -104,7 +104,7 @@ const Route = () => {
             </View>
 
             <View style={styles.dividerWrapper}>
-              <View style={styles.hollowDivider} />
+              <View style={[styles.hollowDivider, { borderColor: themeColors.divider }]} />
             </View>
 
             <View style={styles.inputRow}>
@@ -134,7 +134,7 @@ const Route = () => {
         </View>
 
         {/* Recent Searches Title */}
-        <Text style={styles.sectionTitle}>Recent Searches</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Recent Searches</Text>
 
         {/* Recent Search Cards */}
         <View style={styles.recentSearchesContainer}>
@@ -143,7 +143,7 @@ const Route = () => {
             { name: "Mall Road", dist: "8KM" },
             { name: "Bus Depot", dist: "5KM" }
           ].map((item, index) => (
-            <Pressable key={index} style={styles.recentSearchCard} onPress={() => setToLocation(item.name)}>
+            <Pressable key={index} style={[styles.recentSearchCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => setToLocation(item.name)}>
               <View style={styles.recentIconWrapper}>
                 <MaterialCommunityIcons name="map-marker-radius-outline" size={26} color={themeColors.text} style={{ fontWeight: '900' }} />
               </View>

@@ -17,29 +17,30 @@ import {
 import { getBuses } from "../services/api";
 import { useAppTheme } from "../context/ThemeContext";
 
-const CSSSearchIcon = () => (
+const CSSSearchIcon = ({ color }: { color: string }) => (
   <View style={styles.cssSearchContainer}>
-    <View style={styles.cssSearchCircle} />
-    <View style={styles.cssSearchHandle} />
+    <View style={[styles.cssSearchCircle, { borderColor: color }]} />
+    <View style={[styles.cssSearchHandle, { backgroundColor: color }]} />
   </View>
 );
 
 const NearbyBusCard = ({ busNumber, routeText, crowdLevel, eta, onPress }: any) => {
   const { themeColors } = useAppTheme();
   return (
-    <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground }]} onPress={onPress}>
+    <Pressable style={[styles.cardContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={onPress}>
       <View style={styles.cardLeft}>
         <View style={styles.busBadge}>
           <Text style={styles.busBadgeText}>{busNumber}</Text>
         </View>
         <Text style={[styles.routeText, { color: themeColors.text }]}>{routeText}</Text>
         <View style={styles.crowdRow}>
-          <Text style={styles.crowdLabel}>Crowd</Text>
+          <Text style={[styles.crowdLabel, { color: themeColors.text }]}>Crowd</Text>
           <View
             style={[
               styles.crowdBadge,
               crowdLevel === "Medium" ? styles.crowdMedium : 
               crowdLevel === "Low" ? styles.crowdLow : styles.crowdHigh,
+              { borderColor: themeColors.divider }
             ]}
           >
             <Text
@@ -150,8 +151,8 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Search Bar */}
-        <View style={[styles.searchBoxContainer, { backgroundColor: themeColors.cardBackground }]}>
-          <CSSSearchIcon />
+        <View style={[styles.searchBoxContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
+          <CSSSearchIcon color={themeColors.text} />
           <TextInput
             style={[styles.searchInput, { color: themeColors.text }]}
             placeholder="Where do you want to go?"
@@ -163,7 +164,7 @@ const Home = () => {
         <View style={styles.actionRow}>
           <View style={styles.actionItem}>
             <Text style={[styles.actionTitle, { color: themeColors.text }]}>Bus Ticket</Text>
-            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground }]} onPress={() => navigation.navigate("Map")}>
+            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => navigation.navigate("Map")}>
               <Image
                 style={styles.actionIcon}
                 source={require("../assets/image-10.png")}
@@ -173,7 +174,7 @@ const Home = () => {
           </View>
           <View style={styles.actionItem}>
             <Text style={[styles.actionTitle, { color: themeColors.text }]}>Daily Pass</Text>
-            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground }]} onPress={() => navigation.navigate("TicketBooking")}>
+            <Pressable style={[styles.actionBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]} onPress={() => navigation.navigate("TicketBooking")}>
               <Image
                 style={styles.actionIcon}
                 source={require("../assets/image-11.png")}
@@ -205,7 +206,7 @@ const Home = () => {
 
         {/* Live Map */}
         <Text style={[styles.sectionTitle, { marginTop: 4, color: themeColors.text }]}>Live Map</Text>
-        <View style={[styles.mapContainer, { backgroundColor: themeColors.cardBackground }]}>
+        <View style={[styles.mapContainer, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.divider }]}>
           {Platform.OS === 'web' ? (
             <iframe
               srcDoc={mapHtml}
