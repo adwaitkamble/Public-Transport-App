@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2022-11-15",
 });
 
 // POST /api/payment/create-payment-intent
@@ -22,10 +22,7 @@ router.post("/create-payment-intent", async (req, res) => {
       amount: amountInSmallestUnit,
       currency: currency,
       description: `Smart Bus Ticket - ${ticketType}`,
-      // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      payment_method_types: ['card', 'upi'],
       metadata: {
         ticketType: ticketType || "unknown",
       },
